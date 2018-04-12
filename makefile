@@ -1,6 +1,6 @@
 -include freertos/freertos.mk
 
-GCC_DIR = /usr/bin/
+GCC_DIR = /opt/gcc-arm-none-eabi/bin/
 SYSTEM = $(GCC_DIR)arm-none-eabi
 
 # Перечисляем компоненты toolchain-а.
