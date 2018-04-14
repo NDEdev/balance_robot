@@ -39,7 +39,8 @@ OBJDUMP	= $(SYSTEM)-objdump
 GDB		= $(SYSTEM)-gdb
 SIZE	= $(SYSTEM)-size
 
-BUILD_PATHS += $(PROJ_PATHS) $(FREERTOS_DIRS) $(MCU_HARDLIB_DIRS)s
+PROJ_CFG_DIR = cfg
+BUILD_PATHS += $(PROJ_PATHS) $(FREERTOS_DIRS) $(MCU_HARDLIB_DIRS) $(PROJ_CFG_DIR)
 
 CFLAGS += $(addprefix -I, $(BUILD_PATHS))
 CFLAGS += $(addprefix -D, $(PROJ_DEFS))
@@ -131,6 +132,10 @@ $(FREERTOS_OUT): $(FREERTOS_OUT_FULL)
 mcu_hardlib: $(MCU_HARDLIB_OUT)
 $(MCU_HARDLIB_OUT): $(MCU_HARDLIB_OUT_FULL)
 
-clean: clean_freertos mcu_hardlib_clean
+clean: clean_freertos mcu_hardlib_clean clean_proj
+
+clean_proj: 
+	rm -r -f obj/o/$(TARGET)
+	rm bin/$(TARGET).bin bin/$(TARGET).elf
 
 
