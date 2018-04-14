@@ -18,6 +18,12 @@ CFLAGS  = -mcpu=$(CPU) -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
 LDFLAGS = -mcpu=$(CPU) -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O0 -g3 -fmessage-length=0 -ffunction-sections -fdata-sections -Wall -Wextra -g3 -nostartfiles -Xlinker --gc-sections --specs=nano.specs -Wl,-u,vfprintf -lm -u _printf_float -u _scanf_float
 ARFLAGS = cr
 
+MAIN_PROJ_OPTIMIZATION = -g3 -O0
+OVERRIDE_EFLIB_OPTIMIZATION = -g3 -O0
+OVERRIDE_MCU_HARDLIB_OPTIMIZATION =
+OVERRIDE_FREERTOS_OPTIMIZATION =
+
+
 
 #Неизменяемая часть
 
@@ -40,7 +46,9 @@ CFLAGS += $(addprefix -D, $(PROJ_DEFS))
 LDFLAGS +=  $(addprefix -T , $(LD_FILES))#добавим файлы ld к строке -nostartfiles -Xlinker --gc-sections
 LDFLAGS += $(addprefix -L, $(LD_DIRS)) 
 LDFLAGS += -Wl,-Map="obj/bin/$(TARGET).map"
+
 LIB_FLAGS = $(addprefix -l, $(LIBS:%.a=%)) -lm
+LIB_FLAGS += -lc -lnosys
 LIBS_FULL = $(addprefix obj/bin/lib, $(LIBS))
 TARGET_FULL := bin/$(TARGET).elf
 TARGET_FULL_BIN := bin/$(TARGET).bin

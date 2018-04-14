@@ -16,7 +16,6 @@ MCU_HARDLIB_OUT_FULL = obj/bin/lib$(MCU_HARDLIB_OUT)
 MCU_HARDLIB_DIRS = $(shell find mcu_hardlib/CMSIS -maxdepth 5 -type d)
 MCU_HARDLIB_DIRS += $(shell find mcu_hardlib/Src -maxdepth 5 -type d)
 MCU_HARDLIB_DIRS += $(shell find mcu_hardlib/Inc -maxdepth 5 -type d)
-MCU_HARDLIB_DIRS += $(shell find mcu_hardlib/newlib -maxdepth 5 -type d)
 
 MCU_HARDLIB_DIRS += mcu_hardlib/ 
 
