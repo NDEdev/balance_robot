@@ -83,6 +83,9 @@ int main ( void ) {
 	//включение предсказателя
 	prefetch_enable();
 
+	//инициализация переферии
+	hardware_init();
+
 	//создания задачи для мигания светодиодом
 	USER_OS_STATIC_TASK_CREATE( ledThread, "ledTask1", TB_LED_TASK_SIZE, &led1Obj, 3, &tbLedThread[0][0], &tsLedThread[0] );
 	vTaskStartScheduler();

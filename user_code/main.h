@@ -7,6 +7,7 @@
 #include "pin.h"
 #include "rcc.h"
 #include "wdt.h"
+#include "hardware_init.h"
 
 
 #define TB_LED_TASK_SIZE				200
