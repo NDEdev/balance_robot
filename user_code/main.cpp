@@ -73,7 +73,7 @@ int main ( void ) {
 	clock.setCfg(0);
 
 	//проверка настройки тактирования с помошью таймеров
-	clock_config_check_init();
+//	clock_config_check_init();
 
 	//включение вачдога
 	wdtObj.init();
