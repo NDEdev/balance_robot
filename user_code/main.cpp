@@ -13,6 +13,9 @@ extern wdt				wdtObj;
 
 extern "C" {
 
+static void prefetch_enable(void);
+
+
 /*!
  * Задача для мигания светодиодом.
  */
@@ -67,6 +70,9 @@ int main ( void ) {
 	Rcc clock(mcu_clock, 1);
 	clock.setCfg(0);
 
+	//проверка настройки тактирования с помошью таймеров
+
+
 /*
 	uint32_t sys = HAL_RCC_GetSysClockFreq();
 	uint32_t hcl = HAL_RCC_GetHCLKFreq();
@@ -80,11 +86,17 @@ int main ( void ) {
 	wdtObj.reset();
 
 	//включение предсказателя
-
+	prefetch_enable();
 
 	USER_OS_STATIC_TASK_CREATE( ledThread, "ledTask1", TB_LED_TASK_SIZE, &led1Obj, 3, &tbLedThread[0][0], &tsLedThread[0] );
 	vTaskStartScheduler();
     while ( true );
+}
+
+static void prefetch_enable(void){
+	__HAL_FLASH_INSTRUCTION_CACHE_ENABLE();
+	__HAL_FLASH_DATA_CACHE_ENABLE();
+	__HAL_FLASH_PREFETCH_BUFFER_ENABLE();
 }
 
 }
