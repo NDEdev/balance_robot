@@ -5,10 +5,6 @@
 #include "FreeRTOSConfig.h"
 
 #ifdef configGENERATE_RUN_TIME_STATS
-extern TimInterrupt		timRunTimeStatsInterruptObj;
-uint32_t				runTimeCounterValue = 0;
-#define GENERATE_RUN_TIME_TIME_HANDLER			TIM6_DAC_IRQHandler
-#define GENERATE_RUN_TIME_TIME_IRQ_NAME			TIM6_DAC_IRQn
 #endif
 
 extern "C" {
@@ -22,20 +18,9 @@ void SysTick_Handler(void) {
 #ifdef configGENERATE_RUN_TIME_STATS
 
 void vConfigureTimerForRunTimeStats ( void ) {
-	timRunTimeStatsInterruptObj.reinit();
-	timRunTimeStatsInterruptObj.on();
-	NVIC_SetPriority( GENERATE_RUN_TIME_TIME_IRQ_NAME,  6 );
-	NVIC_EnableIRQ( GENERATE_RUN_TIME_TIME_IRQ_NAME );
+
 }
 
-uint32_t vGetRunTimeCounterValue ( void ) {
-	return runTimeCounterValue;
-}
-
-void GENERATE_RUN_TIME_TIME_HANDLER ( void ) {
-	runTimeCounterValue++;
-	timRunTimeStatsInterruptObj.clearInterruptFlag();
-}
 
 #endif
 
