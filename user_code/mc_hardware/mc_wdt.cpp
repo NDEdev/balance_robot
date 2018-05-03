@@ -6,7 +6,8 @@
  */
 
 #include "wdt.h"
-#include "user_os.h"
+#include "stm32f4xx_hal.h"
+#include "FreeRTOSConfig.h"
 
 const wdt_cfg cfg = {
 		.task_prio = tskIDLE_PRIORITY + 1,

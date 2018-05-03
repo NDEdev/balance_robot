@@ -1,4 +1,5 @@
 #include "main.h"
+#include "clock_config_check.h"
 
 /*!
  * Статически выделенная память под
@@ -61,6 +62,8 @@ const rcc_cfg mcu_clock[] = {
 	}
 };
 
+
+
 int main ( void ) {
 
 	//Включение шин тактирования задействованных для gpio
@@ -71,14 +74,7 @@ int main ( void ) {
 	clock.setCfg(0);
 
 	//проверка настройки тактирования с помошью таймеров
-
-
-/*
-	uint32_t sys = HAL_RCC_GetSysClockFreq();
-	uint32_t hcl = HAL_RCC_GetHCLKFreq();
-	uint32_t apb1 = HAL_RCC_GetPCLK1Freq();
-	uint32_t apb2 = HAL_RCC_GetPCLK2Freq();
-*/
+	clock_config_check_init();
 
 	//включение вачдога
 	wdtObj.init();
