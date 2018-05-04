@@ -10,7 +10,7 @@
 
 
 
-Mpu6500::Mpu6500(spi_master_8bit_base *_spi):  spi(_spi){
+Mpu6500::Mpu6500(SpiMaster8BitBase *_spi):  spi(_spi){
 
 }
 

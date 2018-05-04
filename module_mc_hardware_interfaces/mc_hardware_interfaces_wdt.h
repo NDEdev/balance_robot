@@ -2,18 +2,32 @@
 
 #ifdef __cplusplus
 
-// Сторожевой таймер.
-// Суть: настраивает встроенный системный таймер на "счет вниз"
-// (согласно конфигурации пользователя), создает поток
-// с наименьшим приоритетом (на +1 больше, чем IDLE),
-// в котором при любой возможности сбрасывается настроенный таймер
-// (устанавливается начальное значение, от которого идет счет вниз).
-// При достижении 0 МК перезагружается.
-class wdt_base {
+#include "mc_hardware_interfaces_base.h"
+
+class WdtBase {
 public:
-	virtual void init ( void )					const = 0;
-	virtual void reset ( void )					const = 0;
-	virtual void reset_service ( void )			const = 0;
+	/*!
+	 * Сбрасывает текущие настройки WDT и инициализирует его заново.
+	 * После инициализации WDT автоматически запускается.
+	 *
+	 * \param[in]	numberCfg		-	выбранный режим работы.
+	 *
+	 * \return		{	BASE_RESULT::OK					-	инициализация прошла успешно.
+	 *					BASE_RESULT::INPUT_VALUE_ERROR	-	несуществующий номер конфигурации.
+	 *					BASE_RESULT::ERROR_INIT			-	ошибка инициализации.
+	 */
+	virtual	BASE_RESULT	reinit			( uint32_t numberCfg = 0 )					= 0;
+
+	/*!
+	 * Метод сбрасывает WDT на рабочее значение.
+	 */
+	virtual	void	reset			( void )										= 0;
+
+	/*!
+	 * Метод сбрасывает WDT на сервисное значение.
+	 */
+	virtual	void	resetService	( void )										= 0;
+
 };
 
 #endif

@@ -10,7 +10,7 @@ USER_OS_STATIC_TASK_STRUCT_TYPE			tsLedThread[1];
 
 extern GlobalPort		mcGpObj;
 extern Pin				led1Obj;
-extern wdt				wdtObj;
+extern Wdt				wdtObj;
 
 extern "C" {
 
@@ -28,7 +28,7 @@ void ledThread ( void* p ) {
 	}
 }
 
-const rcc_cfg mcu_clock[] = {
+const rccCfg mcu_clock[] = {
 	/*!
 	 * Индекс: 0
 	 * Источник: внешний резонатор на 25 МГц. !! Установить в  cfg/stm32f4xx_hal_conf.h
@@ -38,27 +38,31 @@ const rcc_cfg mcu_clock[] = {
 	 * APB1:			42 МГц.
 	 */
     {
-    	.OscillatorType = RCC_OSCILLATORTYPE_HSE,
-		.HSEState       = RCC_HSE_ON,
-		.LSEState       = RCC_LSE_OFF,
-		.HSIState       = RCC_HSI_OFF,
-		.HSICalibrationValue    = RCC_HSICALIBRATION_DEFAULT,
-		.LSIState               = RCC_LSI_OFF,
-		.PLL                    = {
-			.PLLState               = RCC_PLL_ON,
-			.PLLSource              = RCC_PLLSOURCE_HSE,
-			.PLLM                   = 25,
-			.PLLN                   = 336,
-			.PLLP                   = RCC_PLLP_DIV2,
-			.PLLQ                   = 4
-    	},
+		.osc = {
+			.OscillatorType = RCC_OSCILLATORTYPE_HSE,
+			.HSEState       = RCC_HSE_ON,
+			.LSEState       = RCC_LSE_OFF,
+			.HSIState       = RCC_HSI_OFF,
+			.HSICalibrationValue    = RCC_HSICALIBRATION_DEFAULT,
+			.LSIState               = RCC_LSI_OFF,
+			.PLL                    = {
+				.PLLState               = RCC_PLL_ON,
+				.PLLSource              = RCC_PLLSOURCE_HSE,
+				.PLLM                   = 25,
+				.PLLN                   = 336,
+				.PLLP                   = RCC_PLLP_DIV2,
+				.PLLQ                   = 4
+			}
+		},
+		.clk = {
+			.ClockType 		= RCC_CLOCKTYPE_SYSCLK,
+			.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK,
+			.AHBCLKDivider  = RCC_SYSCLK_DIV1,
+			.APB1CLKDivider = RCC_HCLK_DIV4,
+			.APB2CLKDivider = RCC_HCLK_DIV2,
+		},
 
-		.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK,
-		.AHBCLKDivider  = RCC_SYSCLK_DIV1,
-		.APB1CLKDivider = RCC_HCLK_DIV4,
-		.APB2CLKDivider = RCC_HCLK_DIV2,
-
-		.f_latency = FLASH_LATENCY_3
+		.fLatency = FLASH_LATENCY_3
 	}
 };
 
@@ -76,7 +80,7 @@ int main ( void ) {
 //	clock_config_check_init();
 
 	//включение вачдога
-	wdtObj.init();
+	wdtObj.reinit();
 	//устанавливаем run_time timeout
 	wdtObj.reset();
 

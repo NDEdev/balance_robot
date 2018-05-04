@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-void dma_clk_on ( DMA_Stream_TypeDef* dma);
-void dma_irq_on ( DMA_Stream_TypeDef* dma, uint32_t prio );
+void dmaClkOn ( DMA_Stream_TypeDef* dma);
+void dmaIrqOn ( DMA_Stream_TypeDef* dma, uint32_t prio );
 
 #ifdef __cplusplus
 }

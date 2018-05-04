@@ -1,6 +1,6 @@
 #include "dma.h"
 
-void dma_clk_on ( DMA_Stream_TypeDef* dma) {
+void dmaClkOn ( DMA_Stream_TypeDef* dma) {
     switch ( (uint32_t)dma ) {
     case DMA1_Stream0_BASE:
     case DMA1_Stream1_BASE:
@@ -28,7 +28,7 @@ void dma_clk_on ( DMA_Stream_TypeDef* dma) {
     };
 }
 
-void dma_irq_on ( DMA_Stream_TypeDef* dma, uint32_t prio ) {
+void dmaIrqOn ( DMA_Stream_TypeDef* dma, uint32_t prio ) {
     switch ( (uint32_t)dma ) {
 	case DMA1_Stream0_BASE: NVIC_SetPriority( DMA1_Stream0_IRQn, prio );    NVIC_EnableIRQ( DMA1_Stream0_IRQn ); break;
 	case DMA1_Stream1_BASE: NVIC_SetPriority( DMA1_Stream1_IRQn, prio );    NVIC_EnableIRQ( DMA1_Stream1_IRQn ); break;

@@ -34,9 +34,9 @@ class Mpu6500: public Mpu::MpuInterface{
 	static void 	mpuThread		(void *p);
 
 public:
-	Mpu6500							(spi_master_8bit_base *_spi);
+	Mpu6500							(SpiMaster8BitBase *_spi);
 	 ~Mpu6500();
-	spi_master_8bit_base 					*spi ;
+	 SpiMaster8BitBase 					*spi ;
 
 	bool					init();
 

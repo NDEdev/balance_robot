@@ -8,14 +8,18 @@
 #include "spi.h"
 #include "mpu6500.h"
 
-extern spi_master_8bit spi1;
+extern SpiMaster8Bit spi1;
+
+extern "C"{
 
 void DMA2_Stream0_IRQHandler(void){
-	spi1.handler();
+	spi1.irqHandler();
 }
 
 void DMA2_Stream3_IRQHandler(void){
-	spi1.handler();
+	spi1.irqHandler();
+}
+
 }
 
 Mpu6500	mpuObj(&spi1);

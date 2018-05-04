@@ -9,12 +9,12 @@
 #include "stm32f4xx_hal.h"
 #include "FreeRTOSConfig.h"
 
-const wdt_cfg cfg = {
-		.task_prio = tskIDLE_PRIORITY + 1,
-		.run_time_ms = 300,
-		.startup_time_ms = 3000,
-		.service_time_ms = 3000
+const wdtCfg cfg = {
+		.taskPrio = tskIDLE_PRIORITY + 1,
+		.runTimeMs = 300,
+		.startupTimeMs = 3000,
+		.serviceTimeMs = 3000
 };
 
-wdt wdtObj(&cfg);
+Wdt wdtObj(&cfg, 1);
 

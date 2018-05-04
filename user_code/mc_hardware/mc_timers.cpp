@@ -15,10 +15,10 @@ clkTimBaseCfg		tim9BaseCfg = {
 	.pulse					=	0
 };
 
-TimInterruptCfg		tim1CheckClockConfig = {
+timInterruptCfg		tim1CheckClockConfig = {
 	.tim					= TIM9,
-	.p_cfg					= &tim9BaseCfg,
-	.size_cfg				= 1
+	.cfg					= &tim9BaseCfg,
+	.countCfg				= 1
 };
 
 TimInterrupt		tim9Irq( &tim1CheckClockConfig );
@@ -29,10 +29,10 @@ clkTimBaseCfg		tim2BaseCfg = {
 	.pulse					=	0
 };
 
-TimInterruptCfg		tim2CheckClockConfig = {
+timInterruptCfg		tim2CheckClockConfig = {
 	.tim					= TIM2,
-	.p_cfg					= &tim2BaseCfg,
-	.size_cfg				= 1
+	.cfg					= &tim2BaseCfg,
+	.countCfg				= 1
 };
 
 TimInterrupt		tim2Irq( &tim2CheckClockConfig );
