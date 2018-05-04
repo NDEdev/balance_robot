@@ -1,0 +1,3 @@
+[submodule "module_stm32f4_low_level_by_st"]
+	path = module_stm32f4_low_level_by_st
+	url = git@github.com:NDEdev/module_stm32f4_low_level_by_st.git
