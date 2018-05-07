@@ -80,9 +80,9 @@ int main ( void ) {
 //	clock_config_check_init();
 
 	//включение вачдога
-	wdtObj.reinit();
+//	wdtObj.reinit();
 	//устанавливаем run_time timeout
-	wdtObj.reset();
+//	wdtObj.reset();
 
 	//включение предсказателя
 	prefetch_enable();

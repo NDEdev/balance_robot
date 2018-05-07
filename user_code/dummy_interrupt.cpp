@@ -18,7 +18,7 @@ void	EXTI0_IRQHandler				( void )	{ while( true ); }
 void	EXTI1_IRQHandler				( void )	{ while( true ); }
 void	EXTI2_IRQHandler				( void )	{ while( true ); }
 void	EXTI3_IRQHandler				( void )	{ while( true ); }
-void	EXTI4_IRQHandler				( void )	{ while( true ); }
+//void	EXTI4_IRQHandler				( void )	{ while( true ); }
 void	DMA1_Stream0_IRQHandler			( void )	{ while( true ); }
 void	DMA1_Stream1_IRQHandler			( void )	{ while( true ); }
 void	DMA1_Stream2_IRQHandler			( void )	{ while( true ); }

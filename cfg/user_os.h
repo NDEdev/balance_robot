@@ -171,5 +171,8 @@
 // стоит ли удерживать данную задачу от вытеснения разблокированной с большим приоритетом (
 // если вдруг симафор таковую разблокирует) или нет.
 #define USER_OS_PRIO_TASK_WOKEN                             BaseType_t
+
+#define USER_OS_TAKE_SEMAPHORE(SEMAPHORE,EXPECTATION)       xSemaphoreTake( SEMAPHORE, ( TickType_t )EXPECTATION )
+
 // Метод должен выдать семафор из прерывания.
 #define USER_OS_GIVE_BIN_SEMAPHORE_FROM_ISR(P_BUF,P_PRIO)   xSemaphoreGiveFromISR( P_BUF, P_PRIO )

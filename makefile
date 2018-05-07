@@ -16,14 +16,14 @@ STARTUPE_S_NAME		= module_stm32f4_low_level_by_st/startupe/startup_stm32f407xx.s
 
 MK_FLAGS									:= -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 --specs=nano.specs
 
-C_FLAGS										:= $(MK_FLAGS) 
+C_FLAGS										:= $(MK_FLAGS)  
 # Все предупреждения == ошибки.
 #C_FLAGS			+= -Werror
 # Выдавать предупреждения (ошибки) о сомнительных констукциях.
 #C_FLAGS			+= -Wall
 # Выдавать предупреждение (ошибку) о любых сомнительных действиях.
 #C_FLAGS			+= -Wextra 
-C_FLAGS										+= -std=c99 
+C_FLAGS										+= -std=c99 -lm
 # Если переменная объявлена как enum, то она должна иметь возможность
 # хранить в себе всевозможные состояния этого enum-а (а не только текущее).
 C_FLAGS										+= -fshort-enums
@@ -32,6 +32,7 @@ CPP_FLAGS									:= $(MK_FLAGS)
 CPP_FLAGS									+= -Werror # -Wall  -Wextra
 CPP_FLAGS									+= -std=c++14
 CPP_FLAGS									+= -fno-exceptions
+CPP_FLAGS									+= -lm
 
 LDFLAGS			:= $(MK_FLAGS) $(LD_FILES) -fno-exceptions
 
