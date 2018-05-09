@@ -186,7 +186,7 @@ void Mpu6500::mpuThread(void *p){
 	//config MPU
 
 	//Настраиваем частоту семплирования
-	buf[0] = 0;//SAMPLE_RATE = INTERNAL_SAMPLE_RATE / (1 + SMPLRT_DIV),	where INTERNAL_SAMPLE_RATE = 1kHz
+	buf[0] = 3;//SAMPLE_RATE = INTERNAL_SAMPLE_RATE / (1 + SMPLRT_DIV),	where INTERNAL_SAMPLE_RATE = 1kHz
 	o->data_write (buf, mpu_regs.smplrt_div, 1);
 
 	//выставляем цифровую фильтрацию - фильтрация отсутствует, при этом частота 1кгц
@@ -226,7 +226,7 @@ void Mpu6500::mpuThread(void *p){
 		TickType_t dt = xTaskGetTickCount() - TaskTickCountOld;//Считаем интервал между прерываниями в системных тиках
 		TaskTickCountOld = xTaskGetTickCount();//Текущее значение системного таймера стало прошлым
 
-		if ( !o->data_read ( buf, mpu_regs.int_status, 15) ) {
+		if ( o->data_read ( buf, mpu_regs.int_status, 15) ) {
 			if ( USER_OS_TAKE_MUTEX ( o->mutex, (TickType_t) 10 ) == pdTRUE ) {
 				o->accel[0] = ((int16_t)(buf[1]<<8) + buf[2]) * o->acc_scale;// * -1
 				o->accel[1] = ((int16_t)(buf[3]<<8) + buf[4]) * o->acc_scale;// * -1
@@ -262,7 +262,7 @@ bool Mpu6500::data_write(void *buf, uint8_t addr, int l){
 
 	if ( rv != BASE_RESULT::OK) return false;
 
-	return 0;
+	return true;
 }
 
 bool Mpu6500::data_read(void *buf, uint8_t addr, int l){
@@ -313,7 +313,7 @@ bool Mpu6500::set_range(int acell_range, int gyro_range, uint8_t fchoice_b ){
 			configASSERT(0);
 	}
 
-	if( !data_write ( &reg_value, mpu_regs.accel_config, 1) )
+	if( !data_write ( &reg_value, mpu_regs.accel_config, 10) )
 		return false;
 
 
@@ -344,7 +344,7 @@ bool Mpu6500::set_range(int acell_range, int gyro_range, uint8_t fchoice_b ){
 	}
 	reg_value |= fchoice_b & 0b11;
 
-	if( !data_write (&reg_value, mpu_regs.gyro_config, 1) )
+	if( !data_write (&reg_value, mpu_regs.gyro_config, 10) )
 		return false;
 
 }
