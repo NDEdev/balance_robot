@@ -12,21 +12,44 @@ extern GlobalPort		mcGpObj;
 extern Pin				led1Obj;
 extern Wdt				wdtObj;
 
-extern "C" {
-
-static void prefetch_enable(void);
 
 
 /*!
  * Задача для мигания светодиодом.
  */
+
+/// For debug
+
+#include "imu_sensor_interface.h"
+#include "mpu6500.h"
+
+extern Mpu6500 mpuObj;
+
 void ledThread ( void* p ) {
 	Pin* pObj = ( Pin* )p;
+	Mpu::mpu_sol_t sol;
 	while (1) {
 		pObj->toggle();
-		vTaskDelay(500);
+
+		/// Debug
+		Mpu::ImuSensorInterface *imu;
+		imu = &mpuObj;
+
+		if(imu->isReadyToWork()){
+			imu->getSolBlocked(sol);
+		}
+
+	vTaskDelay(500);
 	}
 }
+
+
+extern "C" {
+
+static void prefetch_enable(void);
+
+
+
 
 const rccCfg mcu_clock[] = {
 	/*!

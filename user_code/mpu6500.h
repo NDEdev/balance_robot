@@ -11,14 +11,12 @@
 #ifdef __cplusplus
 
 #include "user_os.h"
-#include "mpu_hw_interface.h"
+#include "imu_sensor_interface.h"
 #include "mc_hardware_interfaces_spi.h"
 
 
 
-
-
-class Mpu6500: public Mpu::MpuInterface{
+class Mpu6500: public Mpu::ImuSensorInterface{
 
 	#define	TASK_STACK_SIZES		300
 	//Диапазон измерения акселерометра (+/- g) 2, 4, 8, 16
@@ -29,12 +27,13 @@ class Mpu6500: public Mpu::MpuInterface{
 	#define MPU6500_TEMP_SENSIVITY		333.87
 	#define MPU6500_TEMP_OFFSET			0.0
 
-	bool 									inited = false;
+	bool 									inited;
 	USER_OS_STATIC_BIN_SEMAPHORE			sync;
 	USER_OS_STATIC_BIN_SEMAPHORE			mutex;
-	USER_OS_STATIC_BIN_SEMAPHORE			*extSync; // семафор синхронизации внешнего потока
+	USER_OS_STATIC_BIN_SEMAPHORE			extSync; // семафор синхронизации внешнего потока
 
 	USER_OS_STATIC_BIN_SEMAPHORE_BUFFER		syncBuff;
+	USER_OS_STATIC_BIN_SEMAPHORE_BUFFER		extSyncBuff;
 	USER_OS_STATIC_BIN_SEMAPHORE_BUFFER		mutexBuff;
 
 	USER_OS_STATIC_STACK_TYPE 				p_stack[TASK_STACK_SIZES];
@@ -64,8 +63,11 @@ public:
 	 SpiMaster8BitBase 					*spi ;
 
 	bool				init();
-	void 				solutionReadyIrqHandler		(void);
+	void 				solutionReadyIrqHandler		(void); // Метод вызывается в прерывании GPIO solReady
+
+	///Реализация интерфейса
 	bool				getSolBlocked				(Mpu::mpu_sol_t &sol);
+	bool				getSol						(Mpu::mpu_sol_t &sol);
 	bool 				isReadyToWork				();
 
 };

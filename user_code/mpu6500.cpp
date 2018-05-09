@@ -136,8 +136,10 @@ mpu6500_reg_table_t mpu_regs = {
 
 
 Mpu6500::Mpu6500(SpiMaster8BitBase *_spi):  spi(_spi){
-//	sync = nullptr;
-//	mutex = nullptr;
+	sync = nullptr;
+	mutex = nullptr;
+	extSync = nullptr;
+	inited = false;
 }
 
 Mpu6500::~Mpu6500(){
@@ -153,11 +155,11 @@ bool Mpu6500::init(void){
 	if(spi->reinit() == BASE_RESULT::OK){
 		spi->on();
 		rv = true;
-		inited = true;
 	}
 
 	mutex = USER_OS_STATIC_MUTEX_CREATE(&mutexBuff);
 	sync = USER_OS_STATIC_BIN_SEMAPHORE_CREATE(&syncBuff);
+	extSync = USER_OS_STATIC_BIN_SEMAPHORE_CREATE(&extSyncBuff);
 	USER_OS_STATIC_TASK_CREATE( mpuThread, "mpuTask", TASK_STACK_SIZES, this, 3, this->p_stack, &this->p_struct );
 
 	return rv;
@@ -212,6 +214,8 @@ void Mpu6500::mpuThread(void *p){
 	o->data_read (buf, mpu_regs.accel_config2, 1);
 	o->accel_config2 = buf[0];
 
+	//Инициализация завершена
+	o->inited = true;
 	uint32_t TaskTickCountOld = xTaskGetTickCount();//Прошлое значение системного таймера
 
 	while(true){
@@ -240,9 +244,7 @@ void Mpu6500::mpuThread(void *p){
 				USER_OS_GIVE_MUTEX ( o->mutex );
 			}
 			if (o->extSync != NULL) {
-				if (*o->extSync != NULL) {
-					USER_OS_GIVE_BIN_SEMAPHORE(*o->extSync);
-				}
+				USER_OS_GIVE_BIN_SEMAPHORE(o->extSync);
 			}
 		}
 	}
@@ -353,11 +355,48 @@ void Mpu6500::solutionReadyIrqHandler(void){
 	USER_OS_GIVE_BIN_SEMAPHORE_FROM_ISR(sync, NULL);
 }
 
-bool				Mpu6500::getSolBlocked		(Mpu::mpu_sol_t &sol){
+bool	Mpu6500::getSolBlocked(Mpu::mpu_sol_t &sol){
+	bool rv = false;
 
+	if(USER_OS_TAKE_SEMAPHORE(extSync, portMAX_DELAY) == pdTRUE){
+		if ( USER_OS_TAKE_MUTEX ( mutex, (TickType_t) portMAX_DELAY ) == pdTRUE ) {
+			sol.gyro[0] = gyro[0];
+			sol.gyro[1] = gyro[1];
+			sol.gyro[2] = gyro[2];
+
+			sol.accel[0] = accel[0];
+			sol.accel[1] = accel[1];
+			sol.accel[2] = accel[2];
+
+			sol.tempr = tempr;
+			rv = true;
+			USER_OS_GIVE_MUTEX ( mutex );
+		}
+	}
+	return rv;
 }
 
-bool 				Mpu6500::isReadyToWork 		(void){
+bool	Mpu6500::getSol(Mpu::mpu_sol_t &sol){
+	bool rv = false;
 
+	if ( USER_OS_TAKE_MUTEX ( mutex, (TickType_t) portMAX_DELAY ) == pdTRUE ) {
+		sol.accel[0] = gyro[0];
+		sol.accel[1] = gyro[1];
+		sol.accel[2] = gyro[2];
+
+		sol.accel[0] = accel[0];
+		sol.accel[1] = accel[1];
+		sol.accel[2] = accel[2];
+
+		sol.tempr = tempr;
+		rv = true;
+		USER_OS_GIVE_MUTEX ( mutex );
+	}
+
+	return rv;
+}
+
+bool 	Mpu6500::isReadyToWork(void){
+	return inited;
 }
 

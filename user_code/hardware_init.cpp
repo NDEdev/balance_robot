@@ -47,5 +47,4 @@ void hardware_init(void){
 	NVIC_SetPriority( EXTI4_IRQn,  6 );
 	NVIC_EnableIRQ( EXTI4_IRQn );
 
-
 }
