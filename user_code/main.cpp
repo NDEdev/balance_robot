@@ -92,7 +92,7 @@ const rccCfg mcu_clock[] = {
 
 int main ( void ) {
 
-	//Включение шин тактирования задействованных для gpio
+	//Включение шин <a> задействованных для gpio
 	mcGpObj.reinitAllPorts();
 
 	//настройка тактирования

@@ -14,6 +14,11 @@
 #include "imu_sensor_interface.h"
 #include "mc_hardware_interfaces_spi.h"
 
+typedef struct{
+	int16_t offset_x;
+	int16_t offset_y;
+	int16_t offset_z;
+}mpu6500_offsets_t;
 
 
 class Mpu6500: public Mpu::ImuSensorInterface{
@@ -45,6 +50,10 @@ class Mpu6500: public Mpu::ImuSensorInterface{
 	uint8_t accel_config2;
 	uint8_t int_status;
 	uint8_t int_enable;
+	bool calibration_enable;
+
+	//Raw data
+	int16_t accelGyroRaw[6];
 
 	// Solution
 	float accel[3];
@@ -56,6 +65,9 @@ class Mpu6500: public Mpu::ImuSensorInterface{
 	bool				data_read			(void *buf, uint8_t addr, int l);
 	bool				data_write			(void *buf, uint8_t addr, int l);
 	bool				set_range			(int acell_range, int gyro_range, uint8_t fchoice_b );
+	bool 				set_accel_offsets	(int16_t x_offser, int16_t y_offset, int16_t z_offset);
+	bool 				set_gyro_offsets	(int16_t x_offser, int16_t y_offset, int16_t z_offset);
+	bool 				read_offsets		(uint8_t addr, mpu6500_offsets_t *d);
 
 public:
 	Mpu6500							(SpiMaster8BitBase *_spi);

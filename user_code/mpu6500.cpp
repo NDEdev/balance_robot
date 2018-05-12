@@ -39,8 +39,9 @@ typedef const struct {
 	uint8_t int_enable;
 	uint8_t int_status;
 	uint8_t user_ctrl;
+	uint8_t accel_offsets;
+	uint8_t gyro_offsets;
 } mpu6500_reg_table_t;
-
 
 __attribute__ ((section(".rodata")))
 mpu6500_reg_table_t mpu_regs = {
@@ -131,7 +132,9 @@ mpu6500_reg_table_t mpu_regs = {
 							//[2] - Reserved
 							//[1] - DMP_INT 	This bit automatically sets to 1 when the DMP interrupt has been generated.
 							//[0] - RAW_DATA_RDY_INT
-	.user_ctrl		= 0x6A	//[0] - полный резет, остальные биты не используются
+	.user_ctrl		= 0x6A,	//[0] - полный резет, остальные биты не используются
+	.accel_offsets = 0x77,	//offset accell registers:  int16 offsetX int16 offsetY int16 offsetZ
+	.gyro_offsets = 0x13,	//offset gyro registers:  int16 offsetX int16 offsetY int16 offsetZ
 };
 
 
@@ -140,6 +143,7 @@ Mpu6500::Mpu6500(SpiMaster8BitBase *_spi):  spi(_spi){
 	mutex = nullptr;
 	extSync = nullptr;
 	inited = false;
+	calibration_enable = false;
 }
 
 Mpu6500::~Mpu6500(){
@@ -214,6 +218,9 @@ void Mpu6500::mpuThread(void *p){
 	o->data_read (buf, mpu_regs.accel_config2, 1);
 	o->accel_config2 = buf[0];
 
+	o->set_accel_offsets(0,0,0);
+	o->set_gyro_offsets(0,0,0);
+
 	//Инициализация завершена
 	o->inited = true;
 	uint32_t TaskTickCountOld = xTaskGetTickCount();//Прошлое значение системного таймера
@@ -232,13 +239,30 @@ void Mpu6500::mpuThread(void *p){
 
 		if ( o->data_read ( buf, mpu_regs.int_status, 15) ) {
 			if ( USER_OS_TAKE_MUTEX ( o->mutex, (TickType_t) 10 ) == pdTRUE ) {
-				o->accel[0] = ((int16_t)(buf[1]<<8) + buf[2]) * o->acc_scale;// * -1
-				o->accel[1] = ((int16_t)(buf[3]<<8) + buf[4]) * o->acc_scale;// * -1
-				o->accel[2] = ((int16_t)(buf[5]<<8) + buf[6]) * o->acc_scale;// * -1
 
-				o->gyro[0] = ((int16_t)(buf[9]<<8) + buf[10]) * o->gyro_scale;
-				o->gyro[1] = ((int16_t)(buf[11]<<8) + buf[12]) * o->gyro_scale;
-				o->gyro[2] = ((int16_t)(buf[13]<<8) + buf[14]) * o->gyro_scale;
+				o->accelGyroRaw[0] = ((int16_t)(buf[1]<<8) + buf[2]);
+				o->accelGyroRaw[1] = ((int16_t)(buf[3]<<8) + buf[4]);
+				o->accelGyroRaw[2] = ((int16_t)(buf[5]<<8) + buf[6]);
+
+				o->accelGyroRaw[3] = ((int16_t)(buf[9]<<8) + buf[10]);
+				o->accelGyroRaw[4] = ((int16_t)(buf[11]<<8) + buf[12]);
+				o->accelGyroRaw[5] = ((int16_t)(buf[13]<<8) + buf[14]);
+
+				//Ручная калибровка
+				o->accelGyroRaw[0] -= 8700;
+				o->accelGyroRaw[1] += 11300;
+				o->accelGyroRaw[2] -= 200;
+				o->accelGyroRaw[3] -= 8;
+				o->accelGyroRaw[4] -= 153;
+				o->accelGyroRaw[5] += 153;
+
+				o->accel[0] = o->accelGyroRaw[0] * o->acc_scale;// * -1
+				o->accel[1] = o->accelGyroRaw[1] * o->acc_scale;// * -1
+				o->accel[2] = o->accelGyroRaw[2] * o->acc_scale;// * -1
+
+				o->gyro[0] = o->accelGyroRaw[3] * o->gyro_scale;
+				o->gyro[1] = o->accelGyroRaw[4] * o->gyro_scale;
+				o->gyro[2] = o->accelGyroRaw[5] * o->gyro_scale;
 				o->tempr = ( ((buf[7] << 8) | buf[8]) - MPU6500_TEMP_OFFSET) / MPU6500_TEMP_SENSIVITY + 21.0;
 
 				USER_OS_GIVE_MUTEX ( o->mutex );
@@ -292,22 +316,22 @@ bool Mpu6500::set_range(int acell_range, int gyro_range, uint8_t fchoice_b ){
 	//Устанавливаем диапазон измерения акселерометра
 	switch ( acell_range ) {
 		case 2:
-			reg_value = 0<<3;
-			this->acc_scale = 9.8 * (float) 1/16384;
+			reg_value = 0b00000000;
+			this->acc_scale = 9.8 * (float) 1/4096; // ! пока не ясно почему но здесь такой коэфицент деления
 			break;
 
 		case 4:
-			reg_value = 1<<3;
+			reg_value = 0b00001000;
 			this->acc_scale = 9.8 * (float) 1/8192;
 			break;
 
 		case 8:
-			reg_value = 2<<3;
+			reg_value = 0b00010000;
 			this->acc_scale = 9.8 * (float) 1/4096;
 			break;
 
 		case 16:
-			reg_value = 3<<3;
+			reg_value = 0b00011000;
 			this->acc_scale = 9.8 * (float) 1/2048;
 			break;
 
@@ -315,29 +339,29 @@ bool Mpu6500::set_range(int acell_range, int gyro_range, uint8_t fchoice_b ){
 			configASSERT(0);
 	}
 
-	if( !data_write ( &reg_value, mpu_regs.accel_config, 10) )
+	if( !data_write ( &reg_value, mpu_regs.accel_config, 1) )
 		return false;
 
 
 	//Устанавливаем диапазон измерения акселерометра
 	switch ( gyro_range ) {
 		case 250:
-			reg_value = 0<<3;
+			reg_value = 0b00000000;
 			this->gyro_scale = (float) (M_PI/180) / 131;
 			break;
 
 		case 500:
-			reg_value = 1<<3;
+			reg_value = 0b00001000;
 			this->gyro_scale = (float) (M_PI/180) /65.6;
 			break;
 
 		case 1000:
-			reg_value = 2<<3;
+			reg_value = 0b00010000;
 			this->gyro_scale = (float) (M_PI/180) /32.8;
 			break;
 
 		case 2000:
-			reg_value = 3<<3;
+			reg_value = 0b00011000;
 			this->gyro_scale = (float) (M_PI/180) /16.4;
 			break;
 
@@ -346,10 +370,53 @@ bool Mpu6500::set_range(int acell_range, int gyro_range, uint8_t fchoice_b ){
 	}
 	reg_value |= fchoice_b & 0b11;
 
-	if( !data_write (&reg_value, mpu_regs.gyro_config, 10) )
+	if( !data_write (&reg_value, mpu_regs.gyro_config, 1) )
 		return false;
 
 }
+
+/*!
+ * Метод записывает в ПЗУ mpu6500 значения смещения акселерометров
+ */
+bool Mpu6500::set_accel_offsets(int16_t x_offser, int16_t y_offset, int16_t z_offset){
+	mpu6500_offsets_t accel_offsets;
+	accel_offsets.offset_x = x_offser;
+	accel_offsets.offset_y = y_offset;
+	accel_offsets.offset_z = z_offset;
+	return data_write(&accel_offsets, mpu_regs.accel_offsets, sizeof(accel_offsets));
+}
+
+/*!
+ * Метод записывает в ПЗУ mpu6500 значения смещения гироскопов
+ */
+bool Mpu6500::set_gyro_offsets(int16_t x_offser, int16_t y_offset, int16_t z_offset){
+	mpu6500_offsets_t gyro_offsets;
+	gyro_offsets.offset_x = x_offser;
+	gyro_offsets.offset_y = y_offset;
+	gyro_offsets.offset_z = z_offset;
+	return data_write(&gyro_offsets, mpu_regs.gyro_offsets, sizeof(gyro_offsets));
+}
+
+bool Mpu6500::read_offsets (uint8_t addr, mpu6500_offsets_t *d){
+	bool rv = false;
+	mpu6500_offsets_t offsets;
+	rv = data_read(&offsets, addr, sizeof(offsets));
+
+	if(rv)
+		*d = offsets;
+
+	return rv;
+}
+
+typedef struct {
+	int16_t accX;
+	int16_t accY;
+	int16_t accZ;
+	int16_t gyroX;
+	int16_t gyroY;
+	int16_t gyroZ;
+}rawData_t;
+
 
 void Mpu6500::solutionReadyIrqHandler(void){
 	USER_OS_GIVE_BIN_SEMAPHORE_FROM_ISR(sync, NULL);

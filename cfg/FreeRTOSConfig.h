@@ -14,6 +14,7 @@ extern "C" {
 #define configTICK_RATE_HZ							( ( TickType_t ) 1000 )
 #define configMAX_PRIORITIES						( 5 )
 #define configMINIMAL_STACK_SIZE					( ( unsigned short ) 130 )
+#define configTOTAL_HEAP_SIZE						( ( size_t ) ( 50 * 1024 ) )
 #define configMAX_TASK_NAME_LEN						( 10 )
 
 #define configIDLE_SHOULD_YIELD						1
@@ -28,7 +29,7 @@ extern "C" {
 #define configUSE_STATS_FORMATTING_FUNCTIONS		1
 
 #define configSUPPORT_STATIC_ALLOCATION				1
-#define configSUPPORT_DYNAMIC_ALLOCATION			0
+#define configSUPPORT_DYNAMIC_ALLOCATION			1
 
 #define configUSE_MUTEXES							1
 #define configUSE_RECURSIVE_MUTEXES					1
