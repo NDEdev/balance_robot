@@ -37,6 +37,8 @@ void EXTI4_IRQHandler(void){
 }
 
 void hardware_init(void){
+
+	// Imu - MPU6500
 	if(!mpuObj.init() )
 		configASSERT(0);
 
@@ -46,5 +48,7 @@ void hardware_init(void){
 	NVIC_EnableIRQ( DMA2_Stream3_IRQn );
 	NVIC_SetPriority( EXTI4_IRQn,  6 );
 	NVIC_EnableIRQ( EXTI4_IRQn );
+
+	//
 
 }

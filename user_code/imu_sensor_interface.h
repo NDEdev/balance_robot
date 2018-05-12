@@ -12,19 +12,17 @@
 
 #include <vector>
 
-namespace Mpu{
-
+namespace Imu{
 
 typedef struct{
-	float gyro[3];
-	float accel[3];
-	float tempr;
-}mpu_sol_t;
-
+	float 		gyro[3];  	// rad/sec
+	float 		accel[3]; 	// 1g
+	float 		tempr; 		// degrees
+	TickType_t 	dt;			// time in sysTick since last mesurment
+}imu_sol_t;
 
 class ImuSensorInterface {
 public:
-
 
 /*!
  *  Возвращает true если все инициализировано и готово к работе
@@ -36,12 +34,12 @@ public:
  * Синхронизируется по вычитыванию данных из микросхемы
  * Возвращается true в случае успеха
  */
-	virtual bool getSolBlocked(mpu_sol_t &sol) = 0;
+	virtual bool getSolBlocked(imu_sol_t &sol) = 0;
 
 /*
  * Неблокирующий запрос решения
  */
-	virtual bool getSol(mpu_sol_t &sol) = 0;
+	virtual bool getSol(imu_sol_t &sol) = 0;
 
 };
 
