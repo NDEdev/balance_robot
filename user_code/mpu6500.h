@@ -21,7 +21,7 @@ typedef struct{
 }mpu6500_offsets_t;
 
 
-class Mpu6500: public Mpu::ImuSensorInterface{
+class Mpu6500: public Imu::ImuSensorInterface{
 
 	#define	TASK_STACK_SIZES		300
 	//Диапазон измерения акселерометра (+/- g) 2, 4, 8, 16
@@ -59,6 +59,7 @@ class Mpu6500: public Mpu::ImuSensorInterface{
 	float accel[3];
 	float gyro[3];
 	float tempr;
+	TickType_t dt;
 
 	static void 		mpuThread			(void *p);
 
@@ -78,8 +79,8 @@ public:
 	void 				solutionReadyIrqHandler		(void); // Метод вызывается в прерывании GPIO solReady
 
 	///Реализация интерфейса
-	bool				getSolBlocked				(Mpu::mpu_sol_t &sol);
-	bool				getSol						(Mpu::mpu_sol_t &sol);
+	bool				getSolBlocked				(Imu::imu_sol_t &sol);
+	bool				getSol						(Imu::imu_sol_t &sol);
 	bool 				isReadyToWork				();
 
 };

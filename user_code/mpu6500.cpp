@@ -234,7 +234,7 @@ void Mpu6500::mpuThread(void *p){
 			continue;
 		}
 
-		TickType_t dt = xTaskGetTickCount() - TaskTickCountOld;//Считаем интервал между прерываниями в системных тиках
+		o->dt = xTaskGetTickCount() - TaskTickCountOld;//Считаем интервал между прерываниями в системных тиках
 		TaskTickCountOld = xTaskGetTickCount();//Текущее значение системного таймера стало прошлым
 
 		if ( o->data_read ( buf, mpu_regs.int_status, 15) ) {
@@ -422,19 +422,20 @@ void Mpu6500::solutionReadyIrqHandler(void){
 	USER_OS_GIVE_BIN_SEMAPHORE_FROM_ISR(sync, NULL);
 }
 
-bool	Mpu6500::getSolBlocked(Mpu::mpu_sol_t &sol){
+bool	Mpu6500::getSolBlocked(Imu::imu_sol_t &sol){
 	bool rv = false;
 
 	if(USER_OS_TAKE_SEMAPHORE(extSync, portMAX_DELAY) == pdTRUE){
 		if ( USER_OS_TAKE_MUTEX ( mutex, (TickType_t) portMAX_DELAY ) == pdTRUE ) {
-			sol.gyro[0] = gyro[0];
-			sol.gyro[1] = gyro[1];
-			sol.gyro[2] = gyro[2];
+			sol.gyro[0] = gyro[0] * M_PI/180.0;
+			sol.gyro[1] = gyro[1] * M_PI/180.0;
+			sol.gyro[2] = gyro[2] * M_PI/180.0;
 
-			sol.accel[0] = accel[0];
-			sol.accel[1] = accel[1];
-			sol.accel[2] = accel[2];
+			sol.accel[0] = accel[0]/9.8;
+			sol.accel[1] = accel[1]/9.8;
+			sol.accel[2] = accel[2]/9.8;
 
+			sol.dt = dt;
 			sol.tempr = tempr;
 			rv = true;
 			USER_OS_GIVE_MUTEX ( mutex );
@@ -443,18 +444,19 @@ bool	Mpu6500::getSolBlocked(Mpu::mpu_sol_t &sol){
 	return rv;
 }
 
-bool	Mpu6500::getSol(Mpu::mpu_sol_t &sol){
+bool	Mpu6500::getSol(Imu::imu_sol_t &sol){
 	bool rv = false;
 
 	if ( USER_OS_TAKE_MUTEX ( mutex, (TickType_t) portMAX_DELAY ) == pdTRUE ) {
-		sol.accel[0] = gyro[0];
-		sol.accel[1] = gyro[1];
-		sol.accel[2] = gyro[2];
+		sol.gyro[0] = gyro[0] * M_PI/180.0;
+		sol.gyro[1] = gyro[1] * M_PI/180.0;
+		sol.gyro[2] = gyro[2] * M_PI/180.0;
 
-		sol.accel[0] = accel[0];
-		sol.accel[1] = accel[1];
-		sol.accel[2] = accel[2];
+		sol.accel[0] = accel[0]/9.8;
+		sol.accel[1] = accel[1]/9.8;
+		sol.accel[2] = accel[2]/9.8;
 
+		sol.dt = dt;
 		sol.tempr = tempr;
 		rv = true;
 		USER_OS_GIVE_MUTEX ( mutex );
