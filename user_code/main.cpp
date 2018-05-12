@@ -27,12 +27,12 @@ extern Mpu6500 mpuObj;
 
 void ledThread ( void* p ) {
 	Pin* pObj = ( Pin* )p;
-	Mpu::mpu_sol_t sol;
+	Imu::imu_sol_t sol;
 	while (1) {
 		pObj->toggle();
 
 		/// Debug
-		Mpu::ImuSensorInterface *imu;
+		Imu::ImuSensorInterface *imu;
 		imu = &mpuObj;
 
 		if(imu->isReadyToWork()){
