@@ -20,7 +20,7 @@ public:
 	BalancerDriver();
 	~BalancerDriver();
 
-	void set_imu( ImuFilterInreface *imu_filter, Imu::ImuSensorInterface *imu_sensor);
+	void set_imu( ImuFilterInreface *imu_filter);
 };
 
 #endif

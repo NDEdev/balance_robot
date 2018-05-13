@@ -15,11 +15,9 @@ BalancerDriver::~BalancerDriver(void){
 
 }
 
-void BalancerDriver::set_imu(ImuFilterInreface *imu_filter, Imu::ImuSensorInterface *imu_sensor){
+void BalancerDriver::set_imu(ImuFilterInreface *imu_filter){
 
 	configASSERT(imu_filter);
-	configASSERT(imu_sensor);
 
 	this->imu = imu_filter;
-	this->imu->setImuSensor(imu_sensor);
 }

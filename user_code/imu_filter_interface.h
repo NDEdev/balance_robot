@@ -17,15 +17,10 @@ public:
 	typedef float sol_unit_t;
 
 	typedef struct{
-		sol_unit_t	ang[3];
-		sol_unit_t	ang_rate[3];
+		sol_unit_t	ang[3];			// Rad
+		sol_unit_t	ang_rate[3];	// Rad/Sec
 	}imu_sol_t;
 
-	/*
-	 * !Важно. При инициализации фильтра сенсор должен быть обязательно определён!
-	 * Метод определяет какой именно дравер imu сенсора будет использоваться при получении решения
-	 */
-	virtual void setImuSensor(Imu::ImuSensorInterface *imuSensObj) = 0;
 
 	/*!
 	 *	Метод возвращает true если модуль готов к работу
@@ -44,7 +39,6 @@ public:
 	 */
 	virtual bool getSolBlocked(imu_sol_t &sol) = 0;
 
-	virtual ~ImuFilterInreface();
 };
 
 #endif

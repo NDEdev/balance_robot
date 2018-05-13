@@ -1,5 +1,9 @@
 #include "main.h"
 #include "clock_config_check.h"
+#include "hardware_init.h"
+#include "balancer_driver.h"
+#include "imu_filter.h"
+#include "imu_filter_interface.h"
 
 /*!
  * Статически выделенная память под
@@ -11,8 +15,6 @@ USER_OS_STATIC_TASK_STRUCT_TYPE			tsLedThread[1];
 extern GlobalPort		mcGpObj;
 extern Pin				led1Obj;
 extern Wdt				wdtObj;
-
-
 
 /*!
  * Задача для мигания светодиодом.
@@ -47,9 +49,6 @@ void ledThread ( void* p ) {
 extern "C" {
 
 static void prefetch_enable(void);
-
-
-
 
 const rccCfg mcu_clock[] = {
 	/*!
@@ -89,31 +88,46 @@ const rccCfg mcu_clock[] = {
 	}
 };
 
+const ImuFilter::imu_filter_cfg_t imu_cfg = {
+		.accel_ang_axis = 2,
+		.angrate_axis = 1,
+		.filter_coeff = 0.01
+};
+
 
 int main ( void ) {
 
-	//Включение шин <a> задействованных для gpio
+	// Включение шин <a> задействованных для gpio
 	mcGpObj.reinitAllPorts();
 
-	//настройка тактирования
+	// Настройка тактирования
 	Rcc clock(mcu_clock, 1);
 	clock.setCfg(0);
 
-	//проверка настройки тактирования с помошью таймеров
+	// Проверка настройки тактирования с помошью таймеров
 //	clock_config_check_init();
 
-	//включение вачдога
+	// Включение вачдога
 //	wdtObj.reinit();
-	//устанавливаем run_time timeout
+	// Устанавливаем run_time timeout
 //	wdtObj.reset();
 
-	//включение предсказателя
+	// Включение предсказателя
 	prefetch_enable();
 
-	//инициализация переферии
+	// Инициализация переферии
 	hardware_init();
 
-	//создания задачи для мигания светодиодом
+	// Инициализация интерфейса к переферии и объектов связаных с ней
+	ImuFilter imu(&mpuObj, imu_cfg);
+	imu.init();
+
+	// Инициализация дравера балансиров
+	BalancerDriver balancer;
+	balancer.set_imu(&imu);
+
+
+	// создания задачи для мигания светодиодом
 	USER_OS_STATIC_TASK_CREATE( ledThread, "ledTask1", TB_LED_TASK_SIZE, &led1Obj, 3, &tbLedThread[0][0], &tsLedThread[0] );
 	vTaskStartScheduler();
     while ( true );
