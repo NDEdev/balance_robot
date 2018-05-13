@@ -32,7 +32,7 @@ void ImuFilter::imuThread (void *p){
 		configASSERT(0); // Сенсор не инициализирован
 
 	while(!o->imu_sensor->isReadyToWork())
-		vTaskDelay(100); // Сенсор не инициализирован
+		//vTaskDelay(100); // Сенсор не инициализирован TODO: Косяк, Разобраться, всё зависает при попадании сюда
 
 	// Инициализация началного состояния
 	while(!o->imu_sensor->getSolBlocked(raw_sensor_data)){

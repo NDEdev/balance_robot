@@ -14,11 +14,35 @@ const pinCfg spiCsCfg   = { GPIOB, { GPIO_PIN_4, GPIO_MODE_OUTPUT_PP, GPIO_NOPUL
 const pinCfg mpuIntCfg  = { GPIOC, { GPIO_PIN_4, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
 
 
+/*
+ * Motor driver pins config
+ */
+
+//  motor (1) left config
+const pinCfg mlEnCfg = {GPIOD, { GPIO_PIN_8, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
+const pinCfg mlDirCfg = {GPIOD, { GPIO_PIN_11, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
+const pinCfg mlPwmCfg = {GPIOD, { GPIO_PIN_13, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_AF2_TIM4 } };
+const pinCfg mlAdcCfg = {GPIOA, { GPIO_PIN_2, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
+
+
+// motor (2) right config
+const pinCfg mrEnCfg = {GPIOD, { GPIO_PIN_9, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
+const pinCfg mrDirCfg = {GPIOD, { GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
+const pinCfg mrPwmCfg = {GPIOD, { GPIO_PIN_12, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_AF2_TIM4 } };
+const pinCfg mrAdcCfg = {GPIOA, { GPIO_PIN_3, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
+
+
 const pinCfg mcGpCfg[] = {
 	led1Cfg, pinTim2Cfg, pinTim9Cfg,
 
 	// (MPU) Spi Pins + sol ready
-	spiMosiCfg, spiMisoCfg, spiClkCfg, spiCsCfg, mpuIntCfg
+	spiMosiCfg, spiMisoCfg, spiClkCfg, spiCsCfg, mpuIntCfg,
+
+	// left motor driver  cfg
+	mlEnCfg, mlDirCfg, mlPwmCfg, mlAdcCfg,
+
+	// right motor driver cfg
+	mrEnCfg, mrDirCfg, mrPwmCfg, mrAdcCfg,
 
 };
 
@@ -36,4 +60,18 @@ Pin spiMpuClk( &spiClkCfg );
 Pin spiMpuCs( &spiCsCfg );
 Pin	mpuInt	(&mpuIntCfg);
 
+/*
+ * Motor driver pins obj
+ */
+Pin mlEn	( &mlEnCfg );
+Pin mlDir	( &mlDirCfg );
+Pin mlPwm	( &mlPwmCfg );
+Pin mlAdc	( &mlAdc );
+
+Pin mrEn 	( &mrEnCfg );
+Pin mrDir	( mrDirCfg );
+Pin mrPwm	( &mrPwmCfg );
+Pin mrAdc	( &mrAdcCfg);
+
+// Обьект включения всех  шин тактирования
 GlobalPort		mcGpObj( mcGpCfg, sizeof(mcGpCfg)/sizeof(mcGpCfg[0]) );
