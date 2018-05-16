@@ -11,7 +11,6 @@
 #ifdef __cplusplus
 
 #include "imu_filter_interface.h"
-#include "imu_sensor_interface.h"
 
 class BalancerDriver{
 	ImuFilterInreface *imu;
