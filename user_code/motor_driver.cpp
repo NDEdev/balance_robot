@@ -8,15 +8,16 @@
 #include "motor_driver.h"
 
 
-MotorDriver::MotorDriver(AdcOneChannelBase *_adc, TimPwmOneChannelBase *_pwm, PinBase *_enPin, PinBase *_dirPin) {
-	configASSERT(_adc);
+MotorDriver::MotorDriver(CurrentSensorInterface *_motorCurrentSens, TimPwmOneChannelBase *_pwm, PinBase *_enPin, PinBase *_dirPin, float _maxCurrent): maxCurren(_maxCurrent) {
+	configASSERT(_motorCurrentSens);
 	configASSERT(_pwm);
 	configASSERT(_enPin);
 	configASSERT(_dirPin);
+	configASSERT(_maxCurrent);
 
 	desiredTorque = 0;
 	inited  = false;
-	adc 	= _adc;
+	mcs 	= _motorCurrentSens;
 	enPin	= _enPin;
 	dirPin 	= _dirPin;
 	pwm 	= _pwm;
@@ -34,13 +35,10 @@ bool MotorDriver::init(void){
 	return true;
 }
 
-bool MotorDriver::getCurretTorque(float &currentTorque){
-	bool rv = false;
-
-}
 
 void MotorDriver::motorControlThread(void *p){
 	MotorDriver *o = (MotorDriver*) p;
+	float currentCurren = 0;
 	float currentTorque = 0;
 	//инициализация завершена
 	o->inited = true;
@@ -51,7 +49,16 @@ void MotorDriver::motorControlThread(void *p){
 	while(true){
 		vTaskDelayUntil( &xLastWakeTime, xFrequency );
 
-		//
+		//получим значение тока
+		if(!o->mcs->getCurrent(currentCurren)){
+			// Ошибка чтения
+			continue;
+		}
+
+		// текущее значение момента
+		currentTorque = currentCurren/o->maxCurren;
+
+		// regulator
 
 	}
 }

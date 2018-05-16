@@ -12,7 +12,14 @@
 
 class CurrentSensorInterface{
 public:
+	/*
+	 * Метод возваращает true если подсистема готова готова к работе
+	 */
 	virtual bool isReadyToWork(void) = 0;
+
+	/*
+	 * Метод возвращает true если значение тока вычитано успешно. val - ток в млА.
+	 */
 	virtual bool getCurrent (float &val) = 0;
 };
 

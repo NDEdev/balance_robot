@@ -49,6 +49,13 @@ void hardware_init(void){
 	NVIC_SetPriority( EXTI4_IRQn,  6 );
 	NVIC_EnableIRQ( EXTI4_IRQn );
 
-	//
+	//Adc
+	// Проверка
+	//Current sensor
+	// проверка
+	// pwm
+	//проверка
+	// motor driver
+	//проверка
 
 }

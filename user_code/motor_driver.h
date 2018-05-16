@@ -15,6 +15,7 @@
 #include "mc_hardware_interfaces_adc.h"
 #include "mc_hardware_interfaces_pin.h"
 #include "mc_hardware_interfaces_timer.h"
+#include "current_sensor_interface.h"
 
 class MotorDriver : public MotorDriverInterface {
 
@@ -23,6 +24,7 @@ class MotorDriver : public MotorDriverInterface {
 	// Process
 
 	float	desiredTorque;
+	const float maxCurren; //  Максимальный ток в млА который может проекать через мотор в текущей конфигурации. Заблокированный мотор.
 
 	// Сервисные данные
 	bool 									inited;
@@ -35,10 +37,10 @@ class MotorDriver : public MotorDriverInterface {
 	static void		motorControlThread		(void *p);
 
 	// Интерфейсы к переферии
-	AdcOneChannelBase			*adc;		// Current sensor
-	PinBase						*enPin;		// Enable/Disable driver
-	PinBase						*dirPin;	// Set direction rotation CW/CCW
-	TimPwmOneChannelBase		*pwm;		// Set voltage on motor
+	PinBase						*enPin;				// Enable/Disable driver
+	PinBase						*dirPin;			// Set direction rotation CW/CCW
+	TimPwmOneChannelBase		*pwm;				// Set voltage on motor
+	CurrentSensorInterface		*mcs;				// Motor current sensor
 
 
 	// Реализация интерфейса
@@ -50,12 +52,11 @@ class MotorDriver : public MotorDriverInterface {
 
 public:
 	// Constructor
-	MotorDriver(AdcOneChannelBase *_adc, TimPwmOneChannelBase *_pwm, PinBase *_enPin, PinBase *_dirPin);
+	MotorDriver(CurrentSensorInterface *_motorCurrentSens, TimPwmOneChannelBase *_pwm, PinBase *_enPin, PinBase *_dirPin, float _maxCurrent);
 	// Destructor
 	virtual ~MotorDriver();
 
 	bool 			init					(void);
-
 
 };
 
