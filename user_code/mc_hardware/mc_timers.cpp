@@ -37,6 +37,9 @@ timInterruptCfg		tim2CheckClockConfig = {
 
 TimInterrupt		tim2Irq( &tim2CheckClockConfig );
 
+//*******************************************************
+//	Измерение частоты
+//*******************************************************
 
 // TODO : НАСТРРОИТЬ КОНФИГ СОГЛАСНО CUBE MX
 timCaptureCfg tim1CaptureCfg = {
@@ -78,3 +81,25 @@ CaptureFrequencyCfg	captureFrequencyCfg = {
 };
 
 CaptureFrequency	captureFrequencyObj( &captureFrequencyCfg );
+
+
+//*******************************************************
+//	Измерение положения
+//*******************************************************
+
+const timEncoderCfg tim3EncCfg= {
+		.tim 		= TIM3,
+		.period 	= 1920,
+		.countCfg	= 0
+};
+
+TimEncoder tim3EncObj(&tim3EncCfg);
+
+const timEncoderCfg tim4EncCfg= {
+		.tim 		= TIM4,
+		.period 	= 1920,
+		.countCfg	= 0
+};
+
+TimEncoder tim4EncObj(&tim4EncCfg);
+
