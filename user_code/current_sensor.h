@@ -13,7 +13,7 @@
 #include "current_sensor_interface.h"
 #include "mc_hardware_interfaces_adc.h"
 
-class CurrentSensor : CurrentSensorInterface {
+class CurrentSensor : public CurrentSensorInterface {
 
 	bool 				inited;
 	const double 		transferCoeff; // Коэффициент преобразования напряжения в ток. Размероность Амп/Вол

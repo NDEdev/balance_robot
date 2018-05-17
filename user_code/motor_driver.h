@@ -43,6 +43,8 @@ class MotorDriver : public MotorDriverInterface {
 	CurrentSensorInterface		*mcs;				// Motor current sensor
 
 
+	float 			getDesiredTorque		(void);
+
 	// Реализация интерфейса
 	bool 			isReadyToWork			(void);
 	void 			enable					(bool state);

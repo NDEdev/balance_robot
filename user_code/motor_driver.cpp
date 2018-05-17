@@ -40,6 +40,7 @@ void MotorDriver::motorControlThread(void *p){
 	MotorDriver *o = (MotorDriver*) p;
 	float currentCurren = 0;
 	float currentTorque = 0;
+	float desireTorque = 0;
 	//инициализация завершена
 	o->inited = true;
 
@@ -58,7 +59,68 @@ void MotorDriver::motorControlThread(void *p){
 		// текущее значение момента
 		currentTorque = currentCurren/o->maxCurren;
 
+		// желаемое значение момента
+		desireTorque = o->getDesiredTorque();
+
 		// regulator
 
+
+		// для отладки шлём на прямую шим в зависимости от момента
+
+
+		//перед установкой направления сброси шимм напряжения в 0 во избежания рывка
+		o->pwm->setDuty(0);
+
+		// установим направление вращения согласно знаку момнта
+		if(desireTorque >= 0){
+			o->dirPin->set(true);
+		} else {
+			o->dirPin->set(false);
+		}
+
+		//Установка целевого значения шимм сигнала напряжения на двигатель
+		o->pwm->setDuty(desireTorque);
 	}
+}
+
+
+float MotorDriver::getDesiredTorque	(void){
+	float rv = 0;
+
+	if(USER_OS_TAKE_MUTEX(mutex, portMAX_DELAY) == pdTRUE){
+		rv = this->desiredTorque;
+		USER_OS_GIVE_MUTEX(mutex);
+	}
+
+	return rv;
+}
+
+
+/// Реализация интерфейса
+
+bool MotorDriver::isReadyToWork(void){
+	return inited;
+}
+
+void MotorDriver::enable(bool state){
+	enPin->set(state);
+}
+
+bool MotorDriver::setTorque(float torq){
+	if(USER_OS_TAKE_MUTEX(mutex, portMAX_DELAY) == pdTRUE){
+		this->desiredTorque = torq;
+		USER_OS_GIVE_MUTEX(mutex);
+	}
+
+	return true;
+}
+
+bool MotorDriver::setSpeed(float speed){
+	// обраотка метода не реализована
+	return false;
+}
+
+bool MotorDriver::setPosition(float pos){
+	// обраотка метода не реализована
+	return false;
 }

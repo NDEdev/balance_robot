@@ -7,16 +7,41 @@
 
 
 //	MPU
-
 #include "spi.h"
 #include "mpu6500.h"
-
 extern SpiMaster8Bit spi1;
-
 Mpu6500	mpuObj(&spi1);
 
-extern "C"{
+// ADC
+#include "adc.h"
+extern AdcOneChannel adcLeft;
+extern AdcOneChannel adcRight;
 
+// Current sensor
+#include "current_sensor.h"
+CurrentSensor currentSensorLeft		(&adcLeft, 0.001);
+CurrentSensor currentSensorRight	(&adcRight, 0.001);
+
+// PWM
+#include "timer.h"
+extern TimPwmOneChannel motorLeftPwm;
+extern TimPwmOneChannel motorRightPwm;
+
+// Motor driver
+#include "motor_driver.h"
+
+extern Pin mlEn;
+extern Pin mlDir;
+MotorDriver motorDriverLeft	(&currentSensorLeft, &motorLeftPwm, &mlEn, &mlDir, 1000);
+
+extern Pin mrEn;
+extern Pin mrDir;
+MotorDriver motorDriverRight (&currentSensorRight, &motorRightPwm, &mrEn, &mrDir, 1000);
+
+extern "C"{
+/*
+ * IMU
+ */
 void DMA2_Stream0_IRQHandler(void){
 	spi1.irqHandler();
 }
@@ -34,11 +59,23 @@ void EXTI4_IRQHandler(void){
 	}
 }
 
+/*
+ * ADC Не требует обработчика прерывания
+ */
+
+/*
+ * Current sensor не требует обработчика прерывания
+ */
+
+/*
+ * PWM не требует обработчика прерывания
+ */
+
 }
 
 void hardware_init(void){
 
-	// Imu - MPU6500
+	// IMU - MPU6500
 	if(!mpuObj.init() )
 		configASSERT(0);
 
@@ -49,13 +86,38 @@ void hardware_init(void){
 	NVIC_SetPriority( EXTI4_IRQn,  6 );
 	NVIC_EnableIRQ( EXTI4_IRQn );
 
-	//Adc
+	//ADC
+	if(adcLeft.reinit() != BASE_RESULT::OK)
+		configASSERT(0);
+
+	adcLeft.startContinuousConversion();
+
+	if(adcRight.reinit() != BASE_RESULT::OK)
+			configASSERT(0);
+
+	adcRight.startContinuousConversion();
 	// Проверка
-	//Current sensor
+
+	//Current sensor инициализирован при создании объекта
 	// проверка
-	// pwm
+
+	// PWM left motor
+	if(motorLeftPwm.reinit(0) != BASE_RESULT::OK)
+		configASSERT(0);
+
+	// PWM right motor
+	if(motorRightPwm.reinit(0) != BASE_RESULT::OK)
+			configASSERT(0);
 	//проверка
-	// motor driver
+
+	// Motor driver left
+	if(!motorDriverLeft.init())
+		configASSERT(0);
+
+	// Motor driver right
+	if(!motorDriverRight.init())
+		configASSERT(0);
+
 	//проверка
 
 }
