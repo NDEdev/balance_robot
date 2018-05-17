@@ -41,7 +41,15 @@ void MotorDriver::motorControlThread(void *p){
 	float currentCurren = 0;
 	float currentTorque = 0;
 	float desireTorque = 0;
-	//инициализация завершена
+
+	// инициализация
+	o->pwm->setDuty(0);
+	if(o->pwm->on() != BASE_RESULT::OK )
+		configASSERT(0);
+
+	o->enPin->set(true);
+
+	// инициализация завершена
 	o->inited = true;
 
 	TickType_t xLastWakeTime;
@@ -50,7 +58,7 @@ void MotorDriver::motorControlThread(void *p){
 	while(true){
 		vTaskDelayUntil( &xLastWakeTime, xFrequency );
 
-		//получим значение тока
+		// получим значение тока
 		if(!o->mcs->getCurrent(currentCurren)){
 			// Ошибка чтения
 			continue;
@@ -68,7 +76,7 @@ void MotorDriver::motorControlThread(void *p){
 		// для отладки шлём на прямую шим в зависимости от момента
 
 
-		//перед установкой направления сброси шимм напряжения в 0 во избежания рывка
+		// перед установкой направления сброси шимм напряжения в 0 во избежания рывка
 		o->pwm->setDuty(0);
 
 		// установим направление вращения согласно знаку момнта
@@ -78,7 +86,7 @@ void MotorDriver::motorControlThread(void *p){
 			o->dirPin->set(false);
 		}
 
-		//Установка целевого значения шимм сигнала напряжения на двигатель
+		// установка целевого значения шимм сигнала напряжения на двигатель
 		o->pwm->setDuty(desireTorque);
 	}
 }
