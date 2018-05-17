@@ -45,7 +45,6 @@ void ledThread ( void* p ) {
 	}
 }
 
-
 extern "C" {
 
 static void prefetch_enable(void);

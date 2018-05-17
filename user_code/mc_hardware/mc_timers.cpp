@@ -7,7 +7,7 @@
 
 
 #include "timer.h"
-
+#include "capture_frequency.h"
 
 clkTimBaseCfg		tim9BaseCfg = {
 	.period					=	10000,
@@ -36,3 +36,45 @@ timInterruptCfg		tim2CheckClockConfig = {
 };
 
 TimInterrupt		tim2Irq( &tim2CheckClockConfig );
+
+
+// TODO : НАСТРРОИТЬ КОНФИГ СОГЛАСНО CUBE MX
+timCaptureCfg tim1CaptureCfg = {
+	.tim						=	TIM1,
+	.prescaler					=	100 - 1,
+	.minTickValue				=	105,
+	.countUpForResetChannel		=	13,
+	.maxCountUpTimerPeriod		=	26
+};
+
+TimCapture tim1CaptureObj( &tim1CaptureCfg, 1 );
+
+// TODO : НАСТРРОИТЬ КОНФИГ СОГЛАСНО CUBE MX
+timCaptureCfg tim2CaptureCfg = {
+	.tim						=	TIM2,
+	.prescaler					=	100 - 1,
+	.minTickValue				=	105,
+	.countUpForResetChannel		=	13,
+	.maxCountUpTimerPeriod		=	26
+};
+
+TimCapture tim2CaptureObj( &tim2CaptureCfg, 1 );
+
+captureFrequencyChannelCfg	captureFrequencyChannelArrayCfg[] = {
+	{
+		.timer			=	&tim1CaptureObj,
+		.channel		=	1
+	},
+	{
+		.timer			=	&tim2CaptureObj,
+		.channel		=	2
+	}
+};
+
+CaptureFrequencyCfg	captureFrequencyCfg = {
+	.channelCfg				=	captureFrequencyChannelArrayCfg,
+	.channelCount			=	2,
+	.taskPrio				=	4
+};
+
+CaptureFrequency	captureFrequencyObj( &captureFrequencyCfg );

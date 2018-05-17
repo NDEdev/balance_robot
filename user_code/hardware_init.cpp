@@ -38,6 +38,12 @@ extern Pin mrEn;
 extern Pin mrDir;
 MotorDriver motorDriverRight (&currentSensorRight, &motorRightPwm, &mrEn, &mrDir, 1000);
 
+// TIM capture
+
+
+// TIM Encoder
+
+
 extern "C"{
 /*
  * IMU
