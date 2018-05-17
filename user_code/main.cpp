@@ -125,6 +125,7 @@ int main ( void ) {
 	BalancerDriver balancer;
 	balancer.set_imu(&imu);
 
+	//TODO : СМОТРИ ТРЕЛЛО
 
 	// создания задачи для мигания светодиодом
 	USER_OS_STATIC_TASK_CREATE( ledThread, "ledTask1", TB_LED_TASK_SIZE, &led1Obj, 3, &tbLedThread[0][0], &tsLedThread[0] );

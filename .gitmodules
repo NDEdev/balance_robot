@@ -1,3 +1,6 @@
 [submodule "module_stm32f4_low_level_by_st"]
 	path = module_stm32f4_low_level_by_st
 	url = git@github.com:NDEdev/module_stm32f4_low_level_by_st.git
+[submodule "mc-data-plot-api"]
+	path = mc-data-plot-api
+	url = git@github.com:NDEdev/mc-data-plot-api.git
