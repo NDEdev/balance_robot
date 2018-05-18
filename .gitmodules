@@ -4,3 +4,6 @@
 [submodule "mc-data-plot-api"]
 	path = mc-data-plot-api
 	url = git@github.com:NDEdev/mc-data-plot-api.git
+[submodule "cobs_ex"]
+	path = cobs_ex
+	url = git@github.com:NDEdev/cobs_ex.git
