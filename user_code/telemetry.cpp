@@ -6,7 +6,7 @@
  */
 
 #include "telemetry.h"
-
+#include "cobs_ex.h"
 
 
 Telemetry::Telemetry(UartBase *_uart) : uart(_uart) {
@@ -67,6 +67,46 @@ bool Telemetry::sendValue(std::string name, float val, uint32_t time_us){
 
 	// преобразуем в бинарный формат для передачи
 	uint8_t buff[0xFF] = {0};
-	pakege.assemble_to_binary(buff, sizeof(buff));
+	int len = pakege.assemble_to_binary(buff, sizeof(buff));
 
+	// кодируем бинарный пакет в протоколом cobs
+	uint8_t send_buf[0xFF];
+	int tx_len = cobs_ex::cobs_encode(buff, len, send_buf);
+
+	//посылаем данные в интерфейс
+	if(uart->tx(send_buf, tx_len) != BASE_RESULT::OK)
+		rv = false;
+
+	return rv;
+}
+
+bool Telemetry::sendMessage(std::string message, uint32_t time_us){
+	bool rv = true;
+
+	if(!telemetryListResponded)
+		return false; // список телеметрии не отправлен. клиент не готов к приёму телеметрии
+
+	// собираем полезную нагрузку пакета
+	mc_plot_package::event_item payload;
+	payload.event_time_us = time_us;
+	if(message.size() < sizeof(payload.event_msg))
+			strcpy(payload.event_msg, message.c_str());
+
+	// собираем кадр для отправки
+	mc_plot_package	pakege(mc_plot_package::EVENT_MSG);
+	pakege.fill_payload((uint8_t*)&payload, payload.size());
+
+	// преобразуем в бинарный формат для передачи
+	uint8_t buff[0xFF] = {0};
+	int len = pakege.assemble_to_binary(buff, sizeof(buff));
+
+	// кодируем бинарный пакет в протоколом cobs
+	uint8_t send_buf[0xFF];
+	int tx_len = cobs_ex::cobs_encode(buff, len, send_buf);
+
+	//посылаем данные в интерфейс
+	if(uart->tx(send_buf, tx_len) != BASE_RESULT::OK)
+		rv = false;
+
+	return rv;
 }

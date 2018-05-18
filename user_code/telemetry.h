@@ -22,14 +22,16 @@ class Telemetry {
 	telem_list_t 	list;
 	bool 			telemetryListResponded; // Список телеметрии отправлен по запросу. Клиент готов к приёму сообщений.
 
-
+	//поток разобра сообщений от клиента
 public:
 	Telemetry	(UartBase *_uart);
 	virtual ~Telemetry();
 
-	bool registry		(std::string name);
+	bool init			(void);
+
+	bool registry		(std::string name);  // Регистрация телеметрии дожна происходить до запуска потоков
 	bool sendValue		(std::string name, float val, uint32_t time_us);
-	bool sendMessage	(std::string message);
+	bool sendMessage	(std::string message, uint32_t time_us);
 };
 
 #endif /* USER_CODE_TELEMETRY_H_ */

@@ -90,10 +90,12 @@ include module_system_dummy/makefile
 #**********************************************************************
 USER_H_FILE				:= $(shell find user_code/ -maxdepth 5 -type f -name "*.h" )
 USER_CPP_FILE			:= $(shell find user_code/ -maxdepth 5 -type f -name "*.cpp" )
+USER_CPP_FILE			+= $(shell find cobs_ex -maxdepth 5 -type f -name "*.cpp" ) #добавим исходники с cobs_ex
 USER_C_FILE				:= $(shell find user_code/ -maxdepth 5 -type f -name "*.c" )
 USER_DIR				:= $(shell find user_code/ -maxdepth 5 -type d -name "*" )
 USER_PATH				:= $(addprefix -I, $(USER_DIR))
 USER_PATH				+= $(addprefix -I, ./mc-data-plot-api) #добавим путь к папке с api телеметри
+USER_PATH				+= $(addprefix -I, ./cobs_ex) #добавим каталог с cobs_ex
 USER_OBJ_FILE			:= $(addprefix build/obj/, $(USER_CPP_FILE))
 USER_OBJ_FILE			+= $(addprefix build/obj/, $(USER_C_FILE))
 USER_OBJ_FILE			:= $(patsubst %.cpp, %.o, $(USER_OBJ_FILE))
