@@ -93,6 +93,7 @@ USER_CPP_FILE			:= $(shell find user_code/ -maxdepth 5 -type f -name "*.cpp" )
 USER_C_FILE				:= $(shell find user_code/ -maxdepth 5 -type f -name "*.c" )
 USER_DIR				:= $(shell find user_code/ -maxdepth 5 -type d -name "*" )
 USER_PATH				:= $(addprefix -I, $(USER_DIR))
+USER_PATH				+= $(addprefix -I, ./mc-data-plot-api) #добавим путь к папке с api телеметри
 USER_OBJ_FILE			:= $(addprefix build/obj/, $(USER_CPP_FILE))
 USER_OBJ_FILE			+= $(addprefix build/obj/, $(USER_C_FILE))
 USER_OBJ_FILE			:= $(patsubst %.cpp, %.o, $(USER_OBJ_FILE))
