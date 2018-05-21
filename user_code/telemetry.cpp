@@ -12,11 +12,63 @@
 Telemetry::Telemetry(UartBase *_uart) : uart(_uart) {
 	configASSERT(_uart);
 	telemetryListResponded = false;
+	queueHandle = USER_OS_STATIC_QUEUE_CREATE(100, sizeof(uint8_t), queueStorage, &queueStruct);
+	USER_OS_STATIC_TASK_CREATE(telemetryThread, "rxTelem", TASK_STACK_SIZES, this, 3, p_stack, &p_struct);
 }
 
 Telemetry::~Telemetry() {
 
 }
+
+void Telemetry::telemetryThread(void *p){
+	Telemetry *o = (Telemetry*) p;
+	mc_plot_package::package recv_pckg;
+	int rxLn = 0, txLn = 0, txLnTmp = 0;
+	uint8_t tmpTxBuff[sizeof(mc_plot_package::package)];
+	uint8_t txBuff[sizeof(mc_plot_package::package)+10]; // +10 оверхед для кобса с запасом
+
+	mc_plot_package::telemetry_list_item tm_item;
+	mc_plot_package tm_pkt(mc_plot_package::REPLAY_TELEMETRY_LIST);
+
+	while(true){
+		rxLn = 0;
+		txLn = 0;
+		txLnTmp = 0;
+		// Получаем пакет от глобального парсера
+		rxLn = USER_OS_QUEUE_RECEIVE(o->queueHandle, &recv_pckg, portMAX_DELAY);
+
+		auto it = o->list.begin();
+
+		switch(recv_pckg.id){
+		case mc_plot_package::REQUEST_TELEMETRY_LIST:
+			// отправим всю зарегистрированную телемтрию
+
+			if(it == o->list.end())
+				continue; // В списке не зарегестрировано не одного параметра
+
+			for(; it != o->list.end(); ++it ){
+				tm_item.item_id = it->second;
+				strcpy(tm_item.item_name, it->first.c_str());
+				tm_item.total_item_count = o->list.size();
+
+				tm_pkt.fill_payload((uint8_t*)&tm_item, tm_item.size());
+				txLnTmp = tm_pkt.assemble_to_binary(tmpTxBuff, sizeof(tmpTxBuff));
+				txLn = cobs_ex::cobs_encode(tmpTxBuff, txLnTmp,  txBuff);
+				o->uart->tx(txBuff, sizeof(txBuff), 50);
+			}
+
+			// Разрешаем передачу телеметрии клиенту
+			o->telemetryFlowSet(true);
+			break;
+
+		case mc_plot_package::DISABLE_TELEM_FLOW:
+			o->telemetryFlowSet(false);
+			break;
+		}
+
+	}
+}
+
 
 bool Telemetry::registry(std::string name){
 	bool rv = true;
@@ -109,4 +161,8 @@ bool Telemetry::sendMessage(std::string message, uint32_t time_us){
 		rv = false;
 
 	return rv;
+}
+
+void Telemetry::telemetryFlowSet(bool state){
+	telemetryListResponded = state;
 }
