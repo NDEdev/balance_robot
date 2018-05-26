@@ -19,8 +19,8 @@ extern AdcOneChannel adcRight;
 
 // Current sensor
 #include "current_sensor.h"
-CurrentSensor currentSensorLeft		(&adcLeft, 0.001);
-CurrentSensor currentSensorRight	(&adcRight, 0.001);
+CurrentSensor currentSensorLeft		(&adcLeft, 1.0/0.082, 0.6, 5);
+CurrentSensor currentSensorRight	(&adcRight, 1.0/0.082, 0.6, 5);
 
 // PWM
 #include "timer.h"

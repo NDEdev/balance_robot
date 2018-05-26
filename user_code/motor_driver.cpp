@@ -31,7 +31,7 @@ MotorDriver::~MotorDriver() {
 
 bool MotorDriver::init(void){
 	mutex = USER_OS_STATIC_MUTEX_CREATE(&mutexBuff);
-	USER_OS_STATIC_TASK_CREATE( motorControlThread, "motor", TASK_STACK_SIZES, this, 3, this->p_stack, &this->p_struct );
+	USER_OS_STATIC_TASK_CREATE( motorControlThread, "motor", TASK_STACK_SIZES, this, 5, this->p_stack, &this->p_struct );
 	return true;
 }
 

@@ -16,6 +16,8 @@
 class CurrentSensor : public CurrentSensorInterface {
 
 	bool 				inited;
+	const double 		voltageBias; // Калибровка нулевого значения напряжения. На это число будет уменьшено знаения напряжения посли вычитки
+	const double 		gain;		 // Коэффициет усиленя по напряжению. На это будет разделен результат для получения настоящего наряжения
 	const double 		transferCoeff; // Коэффициент преобразования напряжения в ток. Размероность Амп/Вол
 	AdcOneChannelBase	*adc;
 
@@ -24,7 +26,7 @@ class CurrentSensor : public CurrentSensorInterface {
 
 public:
 	// _transferCoeff - Коэффициент преобразования напряжения в ток. Размероность Амп/Вол
-	CurrentSensor(AdcOneChannelBase *_adc, double _transferCoeff);
+	CurrentSensor(AdcOneChannelBase *_adc, double _transferCoeff, double _voltageBias, double _gain);
 	virtual ~CurrentSensor();
 };
 

@@ -106,7 +106,7 @@ void ImuFilter::imuThread (void *p){
 bool ImuFilter::init(void){
 	mutex = USER_OS_STATIC_MUTEX_CREATE(&mutexBuff);
 	extSync = USER_OS_STATIC_BIN_SEMAPHORE_CREATE(&extSyncBuff);
-	USER_OS_STATIC_TASK_CREATE( imuThread, "mpuTask", TASK_STACK_SIZES, this, 3, this->p_stack, &this->p_struct );
+	USER_OS_STATIC_TASK_CREATE( imuThread, "mpuTask", TASK_STACK_SIZES, this, 4, this->p_stack, &this->p_struct );
 	return true;
 }
 

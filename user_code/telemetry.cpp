@@ -13,7 +13,7 @@ Telemetry::Telemetry(UartBase *_uart) : uart(_uart) {
 	configASSERT(_uart);
 	telemetryListResponded = false;
 	queueHandle = USER_OS_STATIC_QUEUE_CREATE(100, sizeof(uint8_t), queueStorage, &queueStruct);
-	USER_OS_STATIC_TASK_CREATE(telemetryThread, "rxTelem", TASK_STACK_SIZES, this, 3, p_stack, &p_struct);
+	USER_OS_STATIC_TASK_CREATE(telemetryThread, "rxTelem", TASK_STACK_SIZES, this, 7, p_stack, &p_struct);
 }
 
 Telemetry::~Telemetry() {

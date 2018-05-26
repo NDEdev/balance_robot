@@ -5,6 +5,7 @@
 #include "imu_filter.h"
 #include "imu_filter_interface.h"
 
+
 /*!
  * Статически выделенная память под
  * нужны задач, мигающих светодиодами.
@@ -24,22 +25,41 @@ extern Wdt				wdtObj;
 
 #include "imu_sensor_interface.h"
 #include "mpu6500.h"
+#include "mc_hardware_interfaces_adc.h"
+#include "adc.h"
+#include "current_sensor.h"
+#include "current_sensor_interface.h"
 
+extern AdcOneChannel adcLeft;
+extern AdcOneChannel adcRight;
 extern Mpu6500 mpuObj;
+extern CurrentSensor currentSensorLeft;
+extern CurrentSensor currentSensorRight;
 
 void ledThread ( void* p ) {
 	Pin* pObj = ( Pin* )p;
 	Imu::imu_sol_t sol;
+
+	AdcOneChannelBase *adc1 = &adcLeft;
+	AdcOneChannelBase *adc2 = &adcRight;
+
+	CurrentSensorInterface *curSensLeft = &currentSensorLeft;
+	CurrentSensorInterface *curSensRight = &currentSensorRight;
+
+	uint32_t adc_mesure1 = 0;
+	uint32_t adc_mesure2 = 0;
+
+	float currentMesureLeft = 0;
+	float currentMesureRight = 0;
 	while (1) {
 		pObj->toggle();
 
 		/// Debug
-		Imu::ImuSensorInterface *imu;
-		imu = &mpuObj;
+		adc_mesure1 = adc1->getMeasurement();
+		adc_mesure2 = adc2->getMeasurement();
 
-		if(imu->isReadyToWork()){
-			imu->getSolBlocked(sol);
-		}
+		curSensLeft->getCurrent(currentMesureLeft);
+		curSensRight->getCurrent(currentMesureRight);
 
 	vTaskDelay(500);
 	}
@@ -92,7 +112,6 @@ const ImuFilter::imu_filter_cfg_t imu_cfg = {
 		.angrate_axis = 1,
 		.filter_coeff = 0.01
 };
-
 
 int main ( void ) {
 

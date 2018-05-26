@@ -164,7 +164,7 @@ bool Mpu6500::init(void){
 	mutex = USER_OS_STATIC_MUTEX_CREATE(&mutexBuff);
 	sync = USER_OS_STATIC_BIN_SEMAPHORE_CREATE(&syncBuff);
 	extSync = USER_OS_STATIC_BIN_SEMAPHORE_CREATE(&extSyncBuff);
-	USER_OS_STATIC_TASK_CREATE( mpuThread, "mpuTask", TASK_STACK_SIZES, this, 3, this->p_stack, &this->p_struct );
+	USER_OS_STATIC_TASK_CREATE( mpuThread, "mpuTask", TASK_STACK_SIZES, this, 6, this->p_stack, &this->p_struct );
 
 	return rv;
 }
