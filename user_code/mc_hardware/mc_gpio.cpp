@@ -28,7 +28,7 @@ const pinCfg mlAdcCfg = {GPIOA, { GPIO_PIN_1, GPIO_MODE_ANALOG, GPIO_NOPULL, GPI
 // motor (2) right config
 const pinCfg mrEnCfg = {GPIOD, { GPIO_PIN_9, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
 const pinCfg mrDirCfg = {GPIOD, { GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
-const pinCfg mrPwmCfg = {GPIOD, { GPIO_PIN_12, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_AF2_TIM4 } };
+const pinCfg mrPwmCfg = {GPIOB, { GPIO_PIN_14, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_AF9_TIM12 } };
 const pinCfg mrAdcCfg = {GPIOA, { GPIO_PIN_2, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
 
 
@@ -65,13 +65,9 @@ Pin	mpuInt	(&mpuIntCfg);
  */
 Pin mlEn	( &mlEnCfg );
 Pin mlDir	( &mlDirCfg );
-Pin mlPwm	( &mlPwmCfg );
-Pin mlAdc	( &mlAdcCfg );
 
 Pin mrEn 	( &mrEnCfg );
 Pin mrDir	( &mrDirCfg );
-Pin mrPwm	( &mrPwmCfg );
-Pin mrAdc	( &mrAdcCfg);
 
 // Обьект включения всех  шин тактирования
 GlobalPort		mcGpObj( mcGpCfg, sizeof(mcGpCfg)/sizeof(mcGpCfg[0]) );

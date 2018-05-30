@@ -38,7 +38,7 @@ const clkTimBaseCfg clockTimMotorRightCfg = {
 };
 
 const timPwmOneChannelCfg pwmMotorRightCfg = {
-		.tim =			TIM4,
+		.tim =			TIM12,
 		.cfg =			&clockTimMotorRightCfg,
 		.countCfg =		1,
 		.outChannel =  	TIM_CHANNEL_1,

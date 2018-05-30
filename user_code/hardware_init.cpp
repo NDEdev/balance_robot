@@ -112,8 +112,8 @@ void hardware_init(void){
 		configASSERT(0);
 
 	// PWM right motor
-	//if(motorRightPwm.reinit(0) != BASE_RESULT::OK)
-	//	configASSERT(0);
+	if(motorRightPwm.reinit(0) != BASE_RESULT::OK)
+		configASSERT(0);
 
 	//if(motorRightPwm.on() != BASE_RESULT::OK)
 	//	configASSERT(0);
@@ -121,8 +121,8 @@ void hardware_init(void){
 	//проверка
 
 	// Motor driver left
-	if(!motorDriverLeft.init())
-		configASSERT(0);
+	//if(!motorDriverLeft.init())
+//		configASSERT(0);
 
 	// Motor driver right
 	//if(!motorDriverRight.init())
