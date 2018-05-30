@@ -92,4 +92,12 @@ extern "C" {
 	void __attribute__( ( weak ) ) OTG_HS_WKUP_IRQHandler			( void ) { while( true ); }
 	void __attribute__( ( weak ) ) OTG_HS_IRQHandler				( void ) { while( true ); }
 	void __attribute__( ( weak ) ) HASH_RNG_IRQHandler				( void ) { while( true ); }
+
+	void __attribute__( ( weak ) ) ETH_IRQHandler					( void ) { while( true ); }
+	void __attribute__( ( weak ) ) ETH_WKUP_IRQHandler				( void ) { while( true ); }
+	void __attribute__( ( weak ) ) DCMI_IRQHandler					( void ) { while( true ); }
+	void __attribute__( ( weak ) ) FPU_IRQHandler					( void ) { while( true ); }
+
+
+
 }

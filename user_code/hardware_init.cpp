@@ -38,6 +38,10 @@ extern Pin mrEn;
 extern Pin mrDir;
 MotorDriver motorDriverRight (&currentSensorRight, &motorRightPwm, &mrEn, &mrDir, 1000);
 
+// UART telemetry-control
+#include "uart.h"
+extern Uart uartObj;
+
 // TIM capture
 
 
@@ -66,6 +70,18 @@ void EXTI4_IRQHandler(void){
 }
 
 /*
+ * UART
+ */
+
+void USART1_IRQHandler(void){
+	uartObj.irqHandler();
+}
+
+void DMA2_Stream7_IRQHandler(void){
+	uartObj.irqHandler();
+}
+
+/*
  * ADC Не требует обработчика прерывания
  */
 
@@ -85,11 +101,11 @@ void hardware_init(void){
 	if(!mpuObj.init() )
 		configASSERT(0);
 
-	NVIC_SetPriority( DMA2_Stream0_IRQn,  6 );
+	NVIC_SetPriority( DMA2_Stream0_IRQn,  configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+2 );
 	NVIC_EnableIRQ( DMA2_Stream0_IRQn );
-	NVIC_SetPriority( DMA2_Stream3_IRQn,  6 );
+	NVIC_SetPriority( DMA2_Stream3_IRQn,  configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+2 );
 	NVIC_EnableIRQ( DMA2_Stream3_IRQn );
-	NVIC_SetPriority( EXTI4_IRQn,  6 );
+	NVIC_SetPriority( EXTI4_IRQn,  configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+1 );
 	NVIC_EnableIRQ( EXTI4_IRQn );
 
 	//ADC
@@ -115,8 +131,14 @@ void hardware_init(void){
 	if(motorRightPwm.reinit(0) != BASE_RESULT::OK)
 		configASSERT(0);
 
-	//if(motorRightPwm.on() != BASE_RESULT::OK)
-	//	configASSERT(0);
+	//UART telemetry-control
+	if(uartObj.reinit(0) != BASE_RESULT::OK)
+		configASSERT(0);
+
+	NVIC_SetPriority( DMA2_Stream7_IRQn,  configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+3 );
+	NVIC_EnableIRQ( DMA2_Stream7_IRQn );
+	NVIC_SetPriority( USART1_IRQn,  configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+3);
+	NVIC_EnableIRQ( USART1_IRQn );
 
 	//проверка
 

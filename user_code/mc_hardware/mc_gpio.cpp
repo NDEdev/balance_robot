@@ -13,7 +13,6 @@ const pinCfg spiClkCfg  = { GPIOB, { GPIO_PIN_3, GPIO_MODE_AF_PP, GPIO_NOPULL, G
 const pinCfg spiCsCfg   = { GPIOB, { GPIO_PIN_4, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
 const pinCfg mpuIntCfg  = { GPIOC, { GPIO_PIN_4, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
 
-
 /*
  * Motor driver pins config
  */
@@ -31,6 +30,10 @@ const pinCfg mrDirCfg = {GPIOD, { GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
 const pinCfg mrPwmCfg = {GPIOB, { GPIO_PIN_14, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_AF9_TIM12 } };
 const pinCfg mrAdcCfg = {GPIOA, { GPIO_PIN_2, GPIO_MODE_ANALOG, GPIO_NOPULL, GPIO_SPEED_FREQ_VERY_HIGH, 0 } };
 
+// uart telemetry config
+const pinCfg uartRx = {GPIOA, { GPIO_PIN_10, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_AF7_USART1 } };
+const pinCfg uartTx = {GPIOA, { GPIO_PIN_9, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_AF7_USART1 } };
+
 
 const pinCfg mcGpCfg[] = {
 	led1Cfg, pinTim2Cfg, pinTim9Cfg,
@@ -44,6 +47,9 @@ const pinCfg mcGpCfg[] = {
 	// right motor driver cfg
 	mrEnCfg, mrDirCfg, mrPwmCfg, mrAdcCfg,
 
+	//control-telemetry uart
+	uartRx, uartTx
+
 };
 
 Pin	led1Obj( &led1Cfg );
@@ -54,9 +60,6 @@ Pin tim9Obj( &pinTim9Cfg );
  * Mpu pins obj
  */
 
-Pin spiMpuMosi( &spiMosiCfg );
-Pin spiMpuMiso( &spiMisoCfg );
-Pin spiMpuClk( &spiClkCfg );
 Pin spiMpuCs( &spiCsCfg );
 Pin	mpuInt	(&mpuIntCfg);
 

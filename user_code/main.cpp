@@ -31,6 +31,8 @@ extern Wdt				wdtObj;
 #include "current_sensor_interface.h"
 #include "mc_hardware_interfaces_timer.h"
 #include "timer.h"
+#include "uart.h"
+#include "mc_hardware_interfaces_uart.h"
 
 extern AdcOneChannel adcLeft;
 extern AdcOneChannel adcRight;
@@ -40,6 +42,8 @@ extern CurrentSensor currentSensorRight;
 
 extern TimPwmOneChannel motorLeftPwm;
 extern TimPwmOneChannel motorRightPwm;
+
+extern Uart uartObj;
 
 void ledThread ( void* p ) {
 	Pin* pObj = ( Pin* )p;
@@ -54,19 +58,22 @@ void ledThread ( void* p ) {
 	TimPwmOneChannelBase *pwmLeft = &motorLeftPwm;
 	TimPwmOneChannelBase *pwmRight = &motorRightPwm;
 
+	UartBase *uartTelem = &uartObj;
+
 	uint32_t adc_mesure1 = 0;
 	uint32_t adc_mesure2 = 0;
 
 	float currentMesureLeft = 0;
 	float currentMesureRight = 0;
 
-
-
 	pwmLeft->on();
 	pwmRight->on();
 
 	pwmLeft->setDuty(0.5);
 	pwmRight->setDuty(0.5);
+
+	uartTelem->on();
+	const char testUartBuff[] = "HELLO";
 
 	while (1) {
 		pObj->toggle();
@@ -77,6 +84,8 @@ void ledThread ( void* p ) {
 
 		curSensLeft->getCurrent(currentMesureLeft);
 		curSensRight->getCurrent(currentMesureRight);
+
+		uartTelem->tx((uint8_t *)testUartBuff, sizeof(testUartBuff), 50000);
 
 		vTaskDelay(500);
 	}
@@ -153,12 +162,12 @@ int main ( void ) {
 	hardware_init();
 
 	// Инициализация интерфейса к переферии и объектов связаных с ней
-	ImuFilter imu(&mpuObj, imu_cfg);
-	imu.init();
+//	ImuFilter imu(&mpuObj, imu_cfg);
+	//imu.init();
 
 	// Инициализация дравера балансиров
-	BalancerDriver balancer;
-	balancer.set_imu(&imu);
+	//BalancerDriver balancer;
+	//balancer.set_imu(&imu);
 
 	//TODO : СМОТРИ ТРЕЛЛО
 
