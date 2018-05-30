@@ -29,12 +29,17 @@ extern Wdt				wdtObj;
 #include "adc.h"
 #include "current_sensor.h"
 #include "current_sensor_interface.h"
+#include "mc_hardware_interfaces_timer.h"
+#include "timer.h"
 
 extern AdcOneChannel adcLeft;
 extern AdcOneChannel adcRight;
 extern Mpu6500 mpuObj;
 extern CurrentSensor currentSensorLeft;
 extern CurrentSensor currentSensorRight;
+
+extern TimPwmOneChannel motorLeftPwm;
+extern TimPwmOneChannel motorRightPwm;
 
 void ledThread ( void* p ) {
 	Pin* pObj = ( Pin* )p;
@@ -46,11 +51,23 @@ void ledThread ( void* p ) {
 	CurrentSensorInterface *curSensLeft = &currentSensorLeft;
 	CurrentSensorInterface *curSensRight = &currentSensorRight;
 
+	TimPwmOneChannelBase *pwmLeft = &motorLeftPwm;
+	TimPwmOneChannelBase *pwmRight = &motorRightPwm;
+
 	uint32_t adc_mesure1 = 0;
 	uint32_t adc_mesure2 = 0;
 
 	float currentMesureLeft = 0;
 	float currentMesureRight = 0;
+
+
+
+	pwmLeft->on();
+	pwmRight->on();
+
+	pwmLeft->setDuty(0.5);
+	pwmRight->setDuty(0.5);
+
 	while (1) {
 		pObj->toggle();
 
@@ -61,7 +78,7 @@ void ledThread ( void* p ) {
 		curSensLeft->getCurrent(currentMesureLeft);
 		curSensRight->getCurrent(currentMesureRight);
 
-	vTaskDelay(500);
+		vTaskDelay(500);
 	}
 }
 
@@ -76,7 +93,6 @@ const rccCfg mcu_clock[] = {
 	 * PCLK:			168 МГц.
 	 * AHB1:			168 МГц.
 	 * APB2:			84 МГц.
-	 * APB1:			42 МГц.
 	 */
     {
 		.osc = {
